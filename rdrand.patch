@@ -1,0 +1,35 @@
+--- numpy-1.11.1/numpy/random/mtrand/randomkit.c.org	2016-11-05 01:46:03.340199863 +0000
++++ numpy-1.11.1/numpy/random/mtrand/randomkit.c	2016-11-05 01:47:43.168911204 +0000
+@@ -71,6 +71,7 @@
+ #include <limits.h>
+ #include <math.h>
+ #include <assert.h>
++#include <immintrin.h>
+ 
+ #ifdef _WIN32
+ /*
+@@ -212,6 +213,15 @@
+ #define UPPER_MASK 0x80000000UL
+ #define LOWER_MASK 0x7fffffffUL
+ 
++uint32_t rdrand_32(void)
++{
++        uint32_t val;
++
++        while (_rdrand32_step(&val) == 0) {}
++        return val;
++}
++
++
+ /*
+  * Slightly optimised reference implementation of the Mersenne Twister
+  * Note that regardless of the precision of long, only 32 bit random
+@@ -222,6 +232,8 @@
+ {
+     unsigned long y;
+ 
++    return rdrand_32();
++
+     if (state->pos == RK_STATE_LEN) {
+         int i;
+ 

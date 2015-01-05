@@ -1,0 +1,26 @@
+--- numpy-1.13.3/numpy/core/src/npymath/ieee754.c.src~	2017-09-17 09:29:38.000000000 +0000
++++ numpy-1.13.3/numpy/core/src/npymath/ieee754.c.src	2018-01-01 18:47:44.418084792 +0000
+@@ -617,9 +617,22 @@
+       (defined(__FreeBSD__) && (__FreeBSD_version >= 502114))
+ #  include <fenv.h>
+ 
++static inline int
++fast_fetestexcept (int excepts)
++{
++  int temp;
++  unsigned int mxscr;
++
++  /* Get current exceptions.  */
++  __asm__ ("fnstsw %0\n"
++	   "stmxcsr %1" : "=m" (*&temp), "=m" (*&mxscr));
++
++  return (temp | mxscr) & excepts & FE_ALL_EXCEPT;
++}
++
+ int npy_get_floatstatus(void)
+ {
+-    int fpstatus = fetestexcept(FE_DIVBYZERO | FE_OVERFLOW |
++    int fpstatus = fast_fetestexcept(FE_DIVBYZERO | FE_OVERFLOW |
+                                 FE_UNDERFLOW | FE_INVALID);
+ 
+     return ((FE_DIVBYZERO  & fpstatus) ? NPY_FPE_DIVIDEBYZERO : 0) |

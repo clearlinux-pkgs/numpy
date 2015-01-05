@@ -1,0 +1,149 @@
+From 6b76a0589bdc6bb9b3acfe0d0d098a2effe5a395 Mon Sep 17 00:00:00 2001
+From: Victor Rodriguez <victor.rodriguez.bahena@intel.com>
+Date: Tue, 5 Dec 2017 17:35:26 +0000
+Subject: [PATCH] use-avx512f for numpy SIMD instructions
+
+Signed-off-by: Victor Rodriguez <victor.rodriguez.bahena@intel.com>
+---
+ numpy/core/src/umath/simd.inc.src | 102 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 99 insertions(+), 3 deletions(-)
+
+diff --git a/numpy/core/src/umath/simd.inc.src b/numpy/core/src/umath/simd.inc.src
+index 1d7b91d..7a107fa 100644
+--- a/numpy/core/src/umath/simd.inc.src
++++ b/numpy/core/src/umath/simd.inc.src
+@@ -403,8 +403,10 @@ static NPY_INLINE npy_double sse2_horizontal_@VOP@___m128d(__m128d v)
+  *  #c = f, #
+  *  #vtype = __m128, __m128d#
+  *  #vtype256 = __m256, __m256d#
++ *  #vtype512 = __m512, __m512d#
+  *  #vpre = _mm, _mm#
+  *  #vpre256 = _mm256, _mm256#
++ *  #vpre512 = _mm512, _mm512#
+  *  #vsuf = ps, pd#
+  *  #vsufs = ss, sd#
+  *  #nan = NPY_NANF, NPY_NAN#
+@@ -423,7 +425,62 @@ static NPY_INLINE npy_double sse2_horizontal_@VOP@___m128d(__m128d v)
+ static void
+ sse2_binary_@kind@_@TYPE@(@type@ * op, @type@ * ip1, @type@ * ip2, npy_intp n)
+ {
+-#ifdef __AVX2__
++
++#ifdef  __AVX512F__
++    LOOP_BLOCK_ALIGN_VAR(op, @type@, 64)
++        op[i] = ip1[i] @OP@ ip2[i];
++    /* lots of specializations, to squeeze out max performance */
++    if (npy_is_aligned(&ip1[i], 64) && npy_is_aligned(&ip2[i], 64)) {
++        if (ip1 == ip2) {
++            LOOP_BLOCKED(@type@, 64) {
++                @vtype512@ a = @vpre512@_load_@vsuf@(&ip1[i]);
++                @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, a);
++                @vpre512@_store_@vsuf@(&op[i], c);
++            }
++        }
++        else {
++            LOOP_BLOCKED(@type@, 64) {
++                @vtype512@ a = @vpre512@_load_@vsuf@(&ip1[i]);
++                @vtype512@ b = @vpre512@_load_@vsuf@(&ip2[i]);
++                @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, b);
++                @vpre512@_store_@vsuf@(&op[i], c);
++            }
++        }
++    }
++    else if (npy_is_aligned(&ip1[i], 64)) {
++        LOOP_BLOCKED(@type@, 64) {
++            @vtype512@ a = @vpre512@_load_@vsuf@(&ip1[i]);
++            @vtype512@ b = @vpre512@_loadu_@vsuf@(&ip2[i]);
++            @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, b);
++            @vpre512@_store_@vsuf@(&op[i], c);
++        }
++    }
++    else if (npy_is_aligned(&ip2[i], 64)) {
++        LOOP_BLOCKED(@type@, 64) {
++            @vtype512@ a = @vpre512@_loadu_@vsuf@(&ip1[i]);
++            @vtype512@ b = @vpre512@_load_@vsuf@(&ip2[i]);
++            @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, b);
++            @vpre512@_store_@vsuf@(&op[i], c);
++        }
++    }
++    else {
++        if (ip1 == ip2) {
++            LOOP_BLOCKED(@type@, 64) {
++                @vtype512@ a = @vpre512@_loadu_@vsuf@(&ip1[i]);
++                @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, a);
++                @vpre512@_store_@vsuf@(&op[i], c);
++            }
++        }
++        else {
++            LOOP_BLOCKED(@type@, 64) {
++                @vtype512@ a = @vpre512@_loadu_@vsuf@(&ip1[i]);
++                @vtype512@ b = @vpre512@_loadu_@vsuf@(&ip2[i]);
++                @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, b);
++                @vpre512@_store_@vsuf@(&op[i], c);
++            }
++        }
++    }
++#elif __AVX2__
+     LOOP_BLOCK_ALIGN_VAR(op, @type@, 32)
+         op[i] = ip1[i] @OP@ ip2[i];
+     /* lots of specializations, to squeeze out max performance */
+@@ -541,7 +598,27 @@ sse2_binary_@kind@_@TYPE@(@type@ * op, @type@ * ip1, @type@ * ip2, npy_intp n)
+ static void
+ sse2_binary_scalar1_@kind@_@TYPE@(@type@ * op, @type@ * ip1, @type@ * ip2, npy_intp n)
+ {
+-#ifdef __AVX2__
++#ifdef __AVX512F__
++    const @vtype512@ a = @vpre512@_set1_@vsuf@(ip1[0]);
++    LOOP_BLOCK_ALIGN_VAR(op, @type@, 64)
++        op[i] = ip1[0] @OP@ ip2[i];
++    if (npy_is_aligned(&ip2[i], 64)) {
++        LOOP_BLOCKED(@type@, 64) {
++            @vtype512@ b = @vpre512@_load_@vsuf@(&ip2[i]);
++            @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, b);
++            @vpre512@_store_@vsuf@(&op[i], c);
++        }
++    }
++    else {
++        LOOP_BLOCKED(@type@, 64) {
++            @vtype512@ b = @vpre512@_loadu_@vsuf@(&ip2[i]);
++            @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, b);
++            @vpre512@_store_@vsuf@(&op[i], c);
++        }
++    }
++
++
++#elif __AVX2__
+     const @vtype256@ a = @vpre256@_set1_@vsuf@(ip1[0]);
+     LOOP_BLOCK_ALIGN_VAR(op, @type@, 32)
+         op[i] = ip1[0] @OP@ ip2[i];
+@@ -587,7 +664,26 @@ sse2_binary_scalar1_@kind@_@TYPE@(@type@ * op, @type@ * ip1, @type@ * ip2, npy_i
+ static void
+ sse2_binary_scalar2_@kind@_@TYPE@(@type@ * op, @type@ * ip1, @type@ * ip2, npy_intp n)
+ {
+-#ifdef __AVX2__
++#ifdef __AVX512F__
++    const @vtype512@ b = @vpre512@_set1_@vsuf@(ip2[0]);
++    LOOP_BLOCK_ALIGN_VAR(op, @type@, 64)
++        op[i] = ip1[i] @OP@ ip2[0];
++    if (npy_is_aligned(&ip1[i], 64)) {
++        LOOP_BLOCKED(@type@, 64) {
++            @vtype512@ a = @vpre512@_load_@vsuf@(&ip1[i]);
++            @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, b);
++            @vpre512@_store_@vsuf@(&op[i], c);
++        }
++    }
++    else {
++        LOOP_BLOCKED(@type@, 64) {
++            @vtype512@ a = @vpre512@_loadu_@vsuf@(&ip1[i]);
++            @vtype512@ c = @vpre512@_@VOP@_@vsuf@(a, b);
++            @vpre512@_store_@vsuf@(&op[i], c);
++        }
++    }
++
++#elif __AVX2__
+     const @vtype256@ b = @vpre256@_set1_@vsuf@(ip2[0]);
+     LOOP_BLOCK_ALIGN_VAR(op, @type@, 32)
+         op[i] = ip1[i] @OP@ ip2[0];
+-- 
+2.15.1
+

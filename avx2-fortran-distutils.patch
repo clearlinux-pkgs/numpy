@@ -1,0 +1,92 @@
+From 45cfe11b968313fc730cf7a54139f2ce249db68a Mon Sep 17 00:00:00 2001
+From: William Douglas <william.douglas@intel.com>
+Date: Mon, 17 Oct 2016 19:57:29 +0000
+Subject: [PATCH] Add avx2 Fortran library
+
+---
+ numpy/distutils/fcompiler/__init__.py | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/numpy/distutils/fcompiler/__init__.py b/numpy/distutils/fcompiler/__init__.py
+index 0b1b1ee..abc8329 100644
+--- a/numpy/distutils/fcompiler/__init__.py
++++ b/numpy/distutils/fcompiler/__init__.py
+@@ -586,6 +586,15 @@ class FCompiler(CCompiler):
+         else:
+             o_args = [self.object_switch.strip()+obj]
+ 
++        if self.object_switch[-1]==' ':
++            o_args_avx2 = [self.object_switch.strip(), obj + ".avx2"]
++        else:
++            o_args_avx2 = [self.object_switch.strip() + obj + ".avx2"]
++        if self.object_switch[-1]==' ':
++            o_args_avx512 = [self.object_switch.strip(), obj + ".avx512"]
++        else:
++            o_args_avx512 = [self.object_switch.strip() + obj + ".avx512"]
++
+         assert self.compile_switch.strip()
+         s_args = [self.compile_switch, src]
+ 
+@@ -600,11 +605,17 @@ class FCompiler(CCompiler):
+ 
+         command = compiler + cc_args + extra_flags + s_args + o_args \
+                   + extra_postargs + extra_compile_args
++        command_avx2 = compiler + cc_args + ["-march=haswell", "-O3"] + extra_flags + s_args \
++                  + o_args_avx2 + extra_postargs + extra_compile_args
++        command_avx512 = compiler + cc_args + ["-march=skylake-avx512", "-O3"] + extra_flags + s_args \
++                  + o_args_avx512 + extra_postargs + extra_compile_args
+ 
+         display = '%s: %s' % (os.path.basename(compiler[0]) + flavor,
+                               src)
+         try:
+             self.spawn(command, display=display)
++            self.spawn(command_avx2, display=display)
++            self.spawn(command_avx512, display=display)
+         except DistutilsExecError:
+             msg = str(get_exception())
+             raise CompileError(msg)
+@@ -658,21 +666,41 @@ class FCompiler(CCompiler):
+                 ld_args = objects + [self.objects]
+             else:
+                 ld_args = objects + self.objects
++            o_args_avx2 = o_args[:]
++            o_args_avx2[-1] += ".avx2"
++            ld_args_avx2 = ([obj + ".avx2" for obj in ld_args] + lib_opts \
++                            + o_args_avx2)
++            o_args_avx512 = o_args[:]
++            o_args_avx512[-1] += ".avx512"
++            ld_args_avx512 = ([obj + ".avx512" for obj in ld_args] + lib_opts \
++                            + o_args_avx512)
+             ld_args = ld_args + lib_opts + o_args
++
+             if debug:
+                 ld_args[:0] = ['-g']
++                ld_args_avx2[:0] = ['-g']
++                ld_args_avx512[:0] = ['-g']
+             if extra_preargs:
+                 ld_args[:0] = extra_preargs
++                ld_args_avx2[:0] = extra_preargs
++                ld_args_avx512[:0] = extra_preargs
+             if extra_postargs:
+                 ld_args.extend(extra_postargs)
++                ld_args_avx2.extend(extra_postargs)
++                ld_args_avx512.extend(extra_postargs)
+             self.mkpath(os.path.dirname(output_filename))
+             if target_desc == CCompiler.EXECUTABLE:
+                 linker = self.linker_exe[:]
+             else:
+                 linker = self.linker_so[:]
+             command = linker + ld_args
++            command_avx2 = linker + ld_args_avx2
++            command_avx512 = linker + ld_args_avx512
++
+             try:
+                 self.spawn(command)
++                self.spawn(command_avx2)
++                self.spawn(command_avx512)
+             except DistutilsExecError:
+                 msg = str(get_exception())
+                 raise LinkError(msg)
+-- 
+2.10.1
+
