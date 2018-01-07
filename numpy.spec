@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x679F228377C5247B (charlesr.harris@gmail.com)
 #
 Name     : numpy
-Version  : 1.13.3
-Release  : 94
-URL      : http://pypi.debian.net/numpy/numpy-1.13.3.zip
-Source0  : http://pypi.debian.net/numpy/numpy-1.13.3.zip
-Source99 : http://pypi.debian.net/numpy/numpy-1.13.3.zip.asc
+Version  : 1.14.0
+Release  : 95
+URL      : http://pypi.debian.net/numpy/numpy-1.14.0.zip
+Source0  : http://pypi.debian.net/numpy/numpy-1.14.0.zip
+Source99 : http://pypi.debian.net/numpy/numpy-1.14.0.zip.asc
 Summary  : NumPy: array processing for numbers, strings, records, and objects.
 Group    : Development/Tools
 License  : BSD-2-Clause BSD-3-Clause Python-2.0
@@ -98,7 +98,7 @@ python3 components for the numpy package.
 
 
 %prep
-%setup -q -n numpy-1.13.3
+%setup -q -n numpy-1.14.0
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -112,7 +112,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1514833729
+export SOURCE_DATE_EPOCH=1515337890
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
@@ -121,7 +121,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1514833729
+export SOURCE_DATE_EPOCH=1515337890
 rm -rf %{buildroot}
 python2 -tt setup.py build -b py2 install --root=%{buildroot} --force
 python3 -tt setup.py build -b py3 install --root=%{buildroot} --force
