@@ -6,7 +6,7 @@
 #
 Name     : numpy
 Version  : 1.14.0
-Release  : 95
+Release  : 96
 URL      : http://pypi.debian.net/numpy/numpy-1.14.0.zip
 Source0  : http://pypi.debian.net/numpy/numpy-1.14.0.zip
 Source99 : http://pypi.debian.net/numpy/numpy-1.14.0.zip.asc
