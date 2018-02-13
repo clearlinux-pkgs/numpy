@@ -6,7 +6,7 @@
 #
 Name     : numpy
 Version  : 1.14.0
-Release  : 96
+Release  : 97
 URL      : http://pypi.debian.net/numpy/numpy-1.14.0.zip
 Source0  : http://pypi.debian.net/numpy/numpy-1.14.0.zip
 Source99 : http://pypi.debian.net/numpy/numpy-1.14.0.zip.asc
@@ -17,6 +17,7 @@ Requires: numpy-bin
 Requires: numpy-legacypython
 Requires: numpy-python3
 Requires: numpy-python
+Requires: gcc-libs-math
 Requires: openblas
 BuildRequires : Cython
 BuildRequires : gfortran
@@ -81,7 +82,6 @@ legacypython components for the numpy package.
 %package python
 Summary: python components for the numpy package.
 Group: Default
-Requires: numpy-legacypython
 Requires: numpy-python3
 
 %description python
@@ -112,16 +112,16 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1515337890
-export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
+export SOURCE_DATE_EPOCH=1518536044
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
 python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1515337890
+export SOURCE_DATE_EPOCH=1518536044
 rm -rf %{buildroot}
 python2 -tt setup.py build -b py2 install --root=%{buildroot} --force
 python3 -tt setup.py build -b py3 install --root=%{buildroot} --force
