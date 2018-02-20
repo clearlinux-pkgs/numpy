@@ -6,7 +6,7 @@
 #
 Name     : numpy
 Version  : 1.14.0
-Release  : 97
+Release  : 98
 URL      : http://pypi.debian.net/numpy/numpy-1.14.0.zip
 Source0  : http://pypi.debian.net/numpy/numpy-1.14.0.zip
 Source99 : http://pypi.debian.net/numpy/numpy-1.14.0.zip.asc
@@ -14,7 +14,6 @@ Summary  : NumPy: array processing for numbers, strings, records, and objects.
 Group    : Development/Tools
 License  : BSD-2-Clause BSD-3-Clause Python-2.0
 Requires: numpy-bin
-Requires: numpy-legacypython
 Requires: numpy-python3
 Requires: numpy-python
 Requires: gcc-libs-math
@@ -70,6 +69,14 @@ Provides: numpy-devel
 dev components for the numpy package.
 
 
+%package extras
+Summary: extras components for the numpy package.
+Group: Default
+
+%description extras
+extras components for the numpy package.
+
+
 %package legacypython
 Summary: legacypython components for the numpy package.
 Group: Default
@@ -112,7 +119,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1518536044
+export SOURCE_DATE_EPOCH=1519145174
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
@@ -121,7 +128,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1518536044
+export SOURCE_DATE_EPOCH=1519145174
 rm -rf %{buildroot}
 python2 -tt setup.py build -b py2 install --root=%{buildroot} --force
 python3 -tt setup.py build -b py3 install --root=%{buildroot} --force
@@ -134,7 +141,7 @@ echo ----[ mark ]----
 
 %files bin
 %defattr(-,root,root,-)
-/usr/bin/f2py2
+%exclude /usr/bin/f2py2
 /usr/bin/f2py3
 
 %files dev
@@ -187,6 +194,10 @@ echo ----[ mark ]----
 /usr/lib/python3.6/site-packages/numpy/core/include/numpy/oldnumeric.h
 /usr/lib/python3.6/site-packages/numpy/core/include/numpy/ufuncobject.h
 /usr/lib/python3.6/site-packages/numpy/core/include/numpy/utils.h
+
+%files extras
+%defattr(-,root,root,-)
+/usr/bin/f2py2
 
 %files legacypython
 %defattr(-,root,root,-)

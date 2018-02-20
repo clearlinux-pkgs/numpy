@@ -27,7 +27,6 @@ pyzmq
 scikit-image
 scikit-learn
 scipy
-spyder
 tensorflow
 tflearn
 websockify
