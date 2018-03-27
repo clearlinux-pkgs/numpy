@@ -5,15 +5,16 @@
 # Source0 file verified with key 0x679F228377C5247B (charlesr.harris@gmail.com)
 #
 Name     : numpy
-Version  : 1.14.1
-Release  : 100
-URL      : http://pypi.debian.net/numpy/numpy-1.14.1.zip
-Source0  : http://pypi.debian.net/numpy/numpy-1.14.1.zip
-Source99 : http://pypi.debian.net/numpy/numpy-1.14.1.zip.asc
+Version  : 1.14.2
+Release  : 101
+URL      : http://pypi.debian.net/numpy/numpy-1.14.2.zip
+Source0  : http://pypi.debian.net/numpy/numpy-1.14.2.zip
+Source99 : http://pypi.debian.net/numpy/numpy-1.14.2.zip.asc
 Summary  : NumPy: array processing for numbers, strings, records, and objects.
 Group    : Development/Tools
-License  : BSD-2-Clause BSD-3-Clause Python-2.0
+License  : BSD-2-Clause BSD-3-Clause BSD-3-Clause-Clear Python-2.0
 Requires: numpy-bin
+Requires: numpy-legacypython
 Requires: numpy-python3
 Requires: numpy-python
 Requires: Jinja2
@@ -30,6 +31,7 @@ BuildRequires : pip
 BuildRequires : python-dev
 BuildRequires : python3-dev
 BuildRequires : setuptools
+BuildRequires : setuptools-legacypython
 Patch1: build.patch
 Patch2: avx2-distutils.patch
 Patch3: avx2-fortran-distutils.patch
@@ -109,7 +111,7 @@ python3 components for the numpy package.
 
 
 %prep
-%setup -q -n numpy-1.14.1
+%setup -q -n numpy-1.14.2
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -123,7 +125,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1519185888
+export SOURCE_DATE_EPOCH=1522109779
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs "
@@ -132,7 +134,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1519185888
+export SOURCE_DATE_EPOCH=1522109779
 rm -rf %{buildroot}
 python2 -tt setup.py build -b py2 install --root=%{buildroot} --force
 python3 -tt setup.py build -b py3 install --root=%{buildroot} --force

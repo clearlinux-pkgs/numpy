@@ -2,6 +2,7 @@
 Cython
 Keras
 PyWavelets
+R-fastcluster
 Theano
 aeon
 bash_kernel
