@@ -18,6 +18,8 @@ ipython-sql
 jupyter
 jupyter-notebook-gist
 jupyter_client
+jupyterlab
+jupyterlab_launcher
 matplotlib
 notebook
 numba
