@@ -33,7 +33,7 @@ index 0b1b1ee..abc8329 100644
                    + extra_postargs + extra_compile_args
 +        command_avx2 = compiler + cc_args + ["-march=haswell", "-O3"] + extra_flags + s_args \
 +                  + o_args_avx2 + extra_postargs + extra_compile_args
-+        command_avx512 = compiler + cc_args + ["-march=skylake-avx512", "-O3"] + extra_flags + s_args \
++        command_avx512 = compiler + cc_args + ["-march=skylake-avx512", "-O3", "-mprefer-vector-width=512"] + extra_flags + s_args \
 +                  + o_args_avx512 + extra_postargs + extra_compile_args
  
          display = '%s: %s' % (os.path.basename(compiler[0]) + flavor,
