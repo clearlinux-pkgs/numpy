@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.14.4
-Release  : 113
+Release  : 114
 URL      : http://pypi.debian.net/numpy/numpy-1.14.4.zip
 Source0  : http://pypi.debian.net/numpy/numpy-1.14.4.zip
 Summary  : NumPy: array processing for numbers, strings, records, and objects.
