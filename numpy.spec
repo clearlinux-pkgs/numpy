@@ -26,7 +26,7 @@ BuildRequires : openblas
 BuildRequires : pbr
 BuildRequires : pip
 
-BuildRequires : python3-dev
+BuildRequires : python3-dev python-dev
 BuildRequires : setuptools
 BuildRequires : setuptools-legacypython
 Patch1: build.patch
