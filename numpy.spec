@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.14.5
-Release  : 120
+Release  : 121
 URL      : http://pypi.debian.net/numpy/numpy-1.14.5.zip
 Source0  : http://pypi.debian.net/numpy/numpy-1.14.5.zip
 Summary  : NumPy: array processing for numbers, strings, records, and objects.
@@ -27,6 +27,7 @@ BuildRequires : pbr
 BuildRequires : pip
 BuildRequires : python-core
 BuildRequires : python-dev
+BuildRequires : python3-core
 BuildRequires : python3-dev
 BuildRequires : setuptools
 BuildRequires : setuptools-legacypython
@@ -130,7 +131,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1530326700
+export SOURCE_DATE_EPOCH=1530375543
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -139,7 +140,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1530326700
+export SOURCE_DATE_EPOCH=1530375543
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/doc/numpy
 cp LICENSE.txt %{buildroot}/usr/share/doc/numpy/LICENSE.txt
