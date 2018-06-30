@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.14.5
-Release  : 118
+Release  : 119
 URL      : http://pypi.debian.net/numpy/numpy-1.14.5.zip
 Source0  : http://pypi.debian.net/numpy/numpy-1.14.5.zip
 Summary  : NumPy: array processing for numbers, strings, records, and objects.
@@ -25,8 +25,9 @@ BuildRequires : gfortran
 BuildRequires : openblas
 BuildRequires : pbr
 BuildRequires : pip
-
-BuildRequires : python3-dev python-dev
+BuildRequires : python-core
+BuildRequires : python-dev
+BuildRequires : python3-dev
 BuildRequires : setuptools
 BuildRequires : setuptools-legacypython
 Patch1: build.patch
@@ -129,7 +130,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1528854271
+export SOURCE_DATE_EPOCH=1530326700
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -138,7 +139,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1528854271
+export SOURCE_DATE_EPOCH=1530326700
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/doc/numpy
 cp LICENSE.txt %{buildroot}/usr/share/doc/numpy/LICENSE.txt
@@ -184,30 +185,30 @@ echo ----[ mark ]----
 /usr/lib/python2.7/site-packages/numpy/core/include/numpy/oldnumeric.h
 /usr/lib/python2.7/site-packages/numpy/core/include/numpy/ufuncobject.h
 /usr/lib/python2.7/site-packages/numpy/core/include/numpy/utils.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/__multiarray_api.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/__ufunc_api.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/_neighborhood_iterator_imp.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/_numpyconfig.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/arrayobject.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/arrayscalars.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/halffloat.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/ndarrayobject.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/ndarraytypes.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/noprefix.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_3kcompat.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_common.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_cpu.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_endian.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_interrupt.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_math.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_no_deprecated_api.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/npy_os.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/numpyconfig.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/old_defines.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/oldnumeric.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/ufuncobject.h
-/usr/lib/python3.6/site-packages/numpy/core/include/numpy/utils.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/__multiarray_api.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/__ufunc_api.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/_neighborhood_iterator_imp.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/_numpyconfig.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/arrayobject.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/arrayscalars.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/halffloat.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/ndarrayobject.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/ndarraytypes.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/noprefix.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_3kcompat.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_common.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_cpu.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_endian.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_interrupt.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_math.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_no_deprecated_api.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/npy_os.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/numpyconfig.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/old_defines.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/oldnumeric.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/ufuncobject.h
+/usr/lib/python3.7/site-packages/numpy/core/include/numpy/utils.h
 
 %files extras
 %defattr(-,root,root,-)
