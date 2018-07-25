@@ -3,6 +3,6 @@ avx2-distutils.patch
 avx2-fortran-distutils.patch
 timestamp.patch
 cve-2017-12852.nopatch
-use-avx2-instructions.patch
-use-avx512f-for-numpy-SIMD-instructions.patch
+#use-avx2-instructions.patch
+#use-avx512f-for-numpy-SIMD-instructions.patch
 #fast_except.patch
