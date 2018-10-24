@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.15.1
-Release  : 129
+Release  : 130
 URL      : https://files.pythonhosted.org/packages/65/ab/4dfcc20234fae12ee40c714b98077d6e3a10652496bd1488fa4828529b22/numpy-1.15.1.zip
 Source0  : https://files.pythonhosted.org/packages/65/ab/4dfcc20234fae12ee40c714b98077d6e3a10652496bd1488fa4828529b22/numpy-1.15.1.zip
 Summary  : NumPy: array processing for numbers, strings, records, and objects.
