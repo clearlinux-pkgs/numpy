@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.15.3
-Release  : 132
+Release  : 133
 URL      : https://files.pythonhosted.org/packages/83/6b/d03277eacf113697675cd659086a4dcf9472108e2f1a83884c0271bdca46/numpy-1.15.3.zip
 Source0  : https://files.pythonhosted.org/packages/83/6b/d03277eacf113697675cd659086a4dcf9472108e2f1a83884c0271bdca46/numpy-1.15.3.zip
 Summary  : NumPy: array processing for numbers, strings, records, and objects.
@@ -14,8 +14,6 @@ Requires: numpy-bin = %{version}-%{release}
 Requires: numpy-license = %{version}-%{release}
 Requires: numpy-python = %{version}-%{release}
 Requires: numpy-python3 = %{version}-%{release}
-Requires: Jinja2
-Requires: Sphinx
 Requires: gcc-libs-math
 Requires: matplotlib
 Requires: numpy
@@ -127,7 +125,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1541269781
+export SOURCE_DATE_EPOCH=1541275003
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -136,7 +134,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1541269781
+export SOURCE_DATE_EPOCH=1541275003
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/numpy
 cp LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/LICENSE.txt
