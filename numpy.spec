@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.15.4
-Release  : 134
+Release  : 135
 URL      : https://files.pythonhosted.org/packages/2d/80/1809de155bad674b494248bcfca0e49eb4c5d8bee58f26fe7a0dd45029e2/numpy-1.15.4.zip
 Source0  : https://files.pythonhosted.org/packages/2d/80/1809de155bad674b494248bcfca0e49eb4c5d8bee58f26fe7a0dd45029e2/numpy-1.15.4.zip
 Summary  : NumPy: array processing for numbers, strings, records, and objects.
@@ -34,6 +34,7 @@ Patch2: avx2-distutils.patch
 Patch3: avx2-fortran-distutils.patch
 Patch4: timestamp.patch
 Patch5: cve-2017-12852.nopatch
+Patch6: fix-overlap-with-avx.patch
 
 %description
 efficiently manipulate large multi-dimensional arrays of arbitrary
@@ -119,13 +120,14 @@ python3 components for the numpy package.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch6 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1541356129
+export SOURCE_DATE_EPOCH=1542304800
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -134,7 +136,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1541356129
+export SOURCE_DATE_EPOCH=1542304800
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/numpy
 cp LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/LICENSE.txt

@@ -13,6 +13,7 @@ compat-opencv-soname33
 gensim
 h5py
 matplotlib
+mxnet
 numba
 opencv
 pandas
