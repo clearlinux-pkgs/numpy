@@ -35,6 +35,7 @@ Patch3: avx2-fortran-distutils.patch
 Patch4: timestamp.patch
 Patch5: cve-2017-12852.nopatch
 Patch6: fix-overlap-with-avx.patch
+Patch7: fix-bug-vector-size-avx.patch
 
 %description
 efficiently manipulate large multi-dimensional arrays of arbitrary
@@ -121,6 +122,7 @@ python3 components for the numpy package.
 %patch3 -p1
 %patch4 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
