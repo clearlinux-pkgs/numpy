@@ -8,8 +8,10 @@ PyWavelets
 R-fastcluster
 Theano
 aeon
+caffe
 compat-opencv-soname32
 compat-opencv-soname33
+compat-opencv-soname34
 gensim
 h5py
 matplotlib
@@ -19,6 +21,8 @@ opencv
 pandas
 patsy
 pyemd
+pygtk
+pyside2-setup
 pytools
 scikit-image
 scikit-learn
