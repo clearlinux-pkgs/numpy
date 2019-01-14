@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.16.0
-Release  : 140
+Release  : 141
 URL      : https://files.pythonhosted.org/packages/04/b6/d7faa70a3e3eac39f943cc6a6a64ce378259677de516bd899dd9eb8f9b32/numpy-1.16.0.zip
 Source0  : https://files.pythonhosted.org/packages/04/b6/d7faa70a3e3eac39f943cc6a6a64ce378259677de516bd899dd9eb8f9b32/numpy-1.16.0.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -118,7 +118,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1547484293
+export SOURCE_DATE_EPOCH=1547485421
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -127,7 +127,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1547484293
+export SOURCE_DATE_EPOCH=1547485421
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/numpy
 cp doc/scipy-sphinx-theme/LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/doc_scipy-sphinx-theme_LICENSE.txt
@@ -145,11 +145,11 @@ echo ----[ mark ]----
 
 %files bin
 %defattr(-,root,root,-)
-%exclude /usr/bin/f2py
 %exclude /usr/bin/f2py2
 %exclude /usr/bin/f2py2.7
-%exclude /usr/bin/f2py3.7
+/usr/bin/f2py
 /usr/bin/f2py3
+/usr/bin/f2py3.7
 
 %files dev
 %defattr(-,root,root,-)
@@ -204,10 +204,8 @@ echo ----[ mark ]----
 
 %files extras
 %defattr(-,root,root,-)
-/usr/bin/f2py
 /usr/bin/f2py2
 /usr/bin/f2py2.7
-/usr/bin/f2py3.7
 
 %files legacypython
 %defattr(-,root,root,-)
