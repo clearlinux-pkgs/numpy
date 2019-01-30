@@ -17,13 +17,16 @@ h5py
 matplotlib
 mxnet
 numba
+numpy-stl
 opencv
 pandas
 patsy
+piglit
 pyemd
 pygtk
 pyside2-setup
 pytools
+pytorch
 scikit-image
 scikit-learn
 scipy

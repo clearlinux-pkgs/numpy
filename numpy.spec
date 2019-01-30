@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.16.0
-Release  : 141
+Release  : 142
 URL      : https://files.pythonhosted.org/packages/04/b6/d7faa70a3e3eac39f943cc6a6a64ce378259677de516bd899dd9eb8f9b32/numpy-1.16.0.zip
 Source0  : https://files.pythonhosted.org/packages/04/b6/d7faa70a3e3eac39f943cc6a6a64ce378259677de516bd899dd9eb8f9b32/numpy-1.16.0.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -37,12 +37,21 @@ Patch2: avx2-distutils.patch
 Patch3: avx2-fortran-distutils.patch
 Patch4: timestamp.patch
 Patch5: cve-2017-12852.nopatch
+Patch6: CVE-2019-6446.patch
 
 %description
-cdoc
-====
-This is a simple Doxygen project for building NumPy C code documentation,
-with docstrings extracted from the C sources themselves.
+- a powerful N-dimensional array object
+        - sophisticated (broadcasting) functions
+        - tools for integrating C/C++ and Fortran code
+        - useful linear algebra, Fourier transform, and random number capabilities
+        - and much more
+        
+        Besides its obvious scientific uses, NumPy can also be used as an efficient
+        multi-dimensional container of generic data. Arbitrary data-types can be
+        defined. This allows NumPy to seamlessly and speedily integrate with a wide
+        variety of databases.
+        
+        All NumPy wheels distributed on PyPI are BSD licensed.
 
 %package bin
 Summary: bin components for the numpy package.
@@ -112,13 +121,14 @@ python3 components for the numpy package.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch6 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1547485421
+export SOURCE_DATE_EPOCH=1548891339
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -127,7 +137,7 @@ python2 setup.py build -b py2 --fcompiler=gnu95
 python3 setup.py build -b py3 --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1547485421
+export SOURCE_DATE_EPOCH=1548891339
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/numpy
 cp doc/scipy-sphinx-theme/LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/doc_scipy-sphinx-theme_LICENSE.txt
