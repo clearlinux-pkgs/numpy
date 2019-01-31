@@ -2,3 +2,5 @@
 # undesirable. One entry per line, no whitespace.
 Sphinx
 Jinja2
+pytest-xdist
+pytest-timeout
