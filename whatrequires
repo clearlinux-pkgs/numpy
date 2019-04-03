@@ -12,6 +12,8 @@ caffe
 compat-opencv-soname32
 compat-opencv-soname33
 compat-opencv-soname34
+darkflow
+deprecated-Cython
 gensim
 h5py
 matplotlib
@@ -32,5 +34,7 @@ scikit-learn
 scipy
 statsmodels
 tensorflow
+tensorflow-estimator
+tensorflow-probability
 tflearn
 websockify

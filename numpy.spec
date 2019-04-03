@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.16.2
-Release  : 146
+Release  : 147
 URL      : https://files.pythonhosted.org/packages/cf/8d/6345b4f32b37945fedc1e027e83970005fc9c699068d2f566b82826515f2/numpy-1.16.2.zip
 Source0  : https://files.pythonhosted.org/packages/cf/8d/6345b4f32b37945fedc1e027e83970005fc9c699068d2f566b82826515f2/numpy-1.16.2.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -20,7 +20,6 @@ Requires: openblas
 BuildRequires : Cython
 BuildRequires : Jinja2
 BuildRequires : Sphinx
-BuildRequires : buildreq-distutils23
 BuildRequires : buildreq-distutils3
 BuildRequires : gfortran
 BuildRequires : openblas
@@ -59,23 +58,6 @@ Requires: numpy = %{version}-%{release}
 
 %description dev
 dev components for the numpy package.
-
-
-%package extras
-Summary: extras components for the numpy package.
-Group: Default
-
-%description extras
-extras components for the numpy package.
-
-
-%package legacypython
-Summary: legacypython components for the numpy package.
-Group: Default
-Requires: python-core
-
-%description legacypython
-legacypython components for the numpy package.
 
 
 %package license
@@ -117,24 +99,23 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1551300557
+export SOURCE_DATE_EPOCH=1554323457
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
-python2 setup.py build -b py2 --fcompiler=gnu95
-python3 setup.py build -b py3 --fcompiler=gnu95
+export MAKEFLAGS=%{?_smp_mflags}
+python3 setup.py build  --fcompiler=gnu95
 
 %install
-export SOURCE_DATE_EPOCH=1551300557
+export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/numpy
 cp doc/scipy-sphinx-theme/LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/doc_scipy-sphinx-theme_LICENSE.txt
 cp doc/source/license.rst %{buildroot}/usr/share/package-licenses/numpy/doc_source_license.rst
 cp doc/sphinxext/LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/doc_sphinxext_LICENSE.txt
 cp tools/npy_tempita/license.txt %{buildroot}/usr/share/package-licenses/numpy/tools_npy_tempita_license.txt
-python2 -tt setup.py build -b py2 install --root=%{buildroot} --force
-python3 -tt setup.py build -b py3 install --root=%{buildroot} --force
+python3 -tt setup.py build  install --root=%{buildroot}
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
@@ -144,38 +125,12 @@ echo ----[ mark ]----
 
 %files bin
 %defattr(-,root,root,-)
-%exclude /usr/bin/f2py2
-%exclude /usr/bin/f2py2.7
 /usr/bin/f2py
 /usr/bin/f2py3
 /usr/bin/f2py3.7
 
 %files dev
 %defattr(-,root,root,-)
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/__multiarray_api.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/__ufunc_api.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/_neighborhood_iterator_imp.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/_numpyconfig.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/arrayobject.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/arrayscalars.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/halffloat.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/ndarrayobject.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/ndarraytypes.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/noprefix.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_3kcompat.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_common.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_cpu.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_endian.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_interrupt.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_math.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_no_deprecated_api.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/npy_os.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/numpyconfig.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/old_defines.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/oldnumeric.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/ufuncobject.h
-/usr/lib/python2.7/site-packages/numpy/core/include/numpy/utils.h
 /usr/lib/python3.7/site-packages/numpy/core/include/numpy/__multiarray_api.h
 /usr/lib/python3.7/site-packages/numpy/core/include/numpy/__ufunc_api.h
 /usr/lib/python3.7/site-packages/numpy/core/include/numpy/_neighborhood_iterator_imp.h
@@ -200,15 +155,6 @@ echo ----[ mark ]----
 /usr/lib/python3.7/site-packages/numpy/core/include/numpy/oldnumeric.h
 /usr/lib/python3.7/site-packages/numpy/core/include/numpy/ufuncobject.h
 /usr/lib/python3.7/site-packages/numpy/core/include/numpy/utils.h
-
-%files extras
-%defattr(-,root,root,-)
-/usr/bin/f2py2
-/usr/bin/f2py2.7
-
-%files legacypython
-%defattr(-,root,root,-)
-/usr/lib/python2*/*
 
 %files license
 %defattr(0644,root,root,0755)
