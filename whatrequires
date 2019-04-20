@@ -16,6 +16,7 @@ darkflow
 deprecated-Cython
 gensim
 h5py
+imageio
 matplotlib
 mxnet
 numba
