@@ -30,6 +30,7 @@ imageio
 matplotlib
 mvn-arrow
 mxnet
+ngraph
 nltk
 numba
 numpy-stl
@@ -41,7 +42,6 @@ piglit
 pyemd
 pygtk
 pyside2-setup
-python-dldt
 pytools
 pytorch
 scikit-image
@@ -51,6 +51,7 @@ statsmodels
 tensorflow
 tensorflow-estimator
 tensorflow-probability
+tensorflow-serving
 texlive
 tflearn
 websockify

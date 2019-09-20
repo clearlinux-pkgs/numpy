@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.17.2
-Release  : 155
+Release  : 156
 URL      : https://files.pythonhosted.org/packages/ac/36/325b27ef698684c38b1fe2e546e2e7ef9cecd7037bcdb35c87efec4356af/numpy-1.17.2.zip
 Source0  : https://files.pythonhosted.org/packages/ac/36/325b27ef698684c38b1fe2e546e2e7ef9cecd7037bcdb35c87efec4356af/numpy-1.17.2.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -34,12 +34,21 @@ Patch2: avx2-distutils.patch
 Patch3: avx2-fortran-distutils.patch
 Patch4: timestamp.patch
 Patch5: cve-2017-12852.nopatch
+Patch6: 0001-AVX-implementation-with-intrinsic-for-small_correlat_v1.patch
 
 %description
-cdoc
-====
-This is a simple Doxygen project for building NumPy C code documentation,
-with docstrings extracted from the C sources themselves.
+- a powerful N-dimensional array object
+        - sophisticated (broadcasting) functions
+        - tools for integrating C/C++ and Fortran code
+        - useful linear algebra, Fourier transform, and random number capabilities
+        - and much more
+        
+        Besides its obvious scientific uses, NumPy can also be used as an efficient
+        multi-dimensional container of generic data. Arbitrary data-types can be
+        defined. This allows NumPy to seamlessly and speedily integrate with a wide
+        variety of databases.
+        
+        All NumPy wheels distributed on PyPI are BSD licensed.
 
 %package bin
 Summary: bin components for the numpy package.
@@ -55,7 +64,6 @@ Summary: dev components for the numpy package.
 Group: Development
 Requires: numpy-bin = %{version}-%{release}
 Provides: numpy-devel = %{version}-%{release}
-Requires: numpy = %{version}-%{release}
 Requires: numpy = %{version}-%{release}
 
 %description dev
@@ -94,22 +102,22 @@ python3 components for the numpy package.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch6 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1567883764
-# -Werror is for werrorists
+export LANG=C
+export SOURCE_DATE_EPOCH=1568960467
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export MAKEFLAGS=%{?_smp_mflags}
 python3 setup.py build  --fcompiler=gnu95
 
@@ -122,6 +130,10 @@ cp doc/source/license.rst %{buildroot}/usr/share/package-licenses/numpy/doc_sour
 cp doc/sphinxext/LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/doc_sphinxext_LICENSE.txt
 cp numpy/linalg/lapack_lite/LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/numpy_linalg_lapack_lite_LICENSE.txt
 cp numpy/ma/LICENSE %{buildroot}/usr/share/package-licenses/numpy/numpy_ma_LICENSE
+cp numpy/random/src/mt19937/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/numpy_random_src_mt19937_LICENSE.md
+cp numpy/random/src/pcg64/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/numpy_random_src_pcg64_LICENSE.md
+cp numpy/random/src/philox/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/numpy_random_src_philox_LICENSE.md
+cp numpy/random/src/sfc64/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/numpy_random_src_sfc64_LICENSE.md
 cp tools/npy_tempita/license.txt %{buildroot}/usr/share/package-licenses/numpy/tools_npy_tempita_license.txt
 python3 -tt setup.py build  install --root=%{buildroot}
 echo ----[ mark ]----
@@ -172,6 +184,10 @@ echo ----[ mark ]----
 /usr/share/package-licenses/numpy/doc_sphinxext_LICENSE.txt
 /usr/share/package-licenses/numpy/numpy_linalg_lapack_lite_LICENSE.txt
 /usr/share/package-licenses/numpy/numpy_ma_LICENSE
+/usr/share/package-licenses/numpy/numpy_random_src_mt19937_LICENSE.md
+/usr/share/package-licenses/numpy/numpy_random_src_pcg64_LICENSE.md
+/usr/share/package-licenses/numpy/numpy_random_src_philox_LICENSE.md
+/usr/share/package-licenses/numpy/numpy_random_src_sfc64_LICENSE.md
 /usr/share/package-licenses/numpy/tools_npy_tempita_license.txt
 
 %files python
