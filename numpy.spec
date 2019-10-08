@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.17.2
-Release  : 156
+Release  : 157
 URL      : https://files.pythonhosted.org/packages/ac/36/325b27ef698684c38b1fe2e546e2e7ef9cecd7037bcdb35c87efec4356af/numpy-1.17.2.zip
 Source0  : https://files.pythonhosted.org/packages/ac/36/325b27ef698684c38b1fe2e546e2e7ef9cecd7037bcdb35c87efec4356af/numpy-1.17.2.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -25,10 +25,7 @@ BuildRequires : buildreq-distutils3
 BuildRequires : gfortran
 BuildRequires : nose
 BuildRequires : openblas
-BuildRequires : python-core
-BuildRequires : python-dev
 BuildRequires : python3-dev
-BuildRequires : setuptools-legacypython
 Patch1: build.patch
 Patch2: avx2-distutils.patch
 Patch3: avx2-fortran-distutils.patch
@@ -108,8 +105,8 @@ python3 components for the numpy package.
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1568960467
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1570556828
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib

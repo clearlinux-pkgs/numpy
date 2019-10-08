@@ -14,12 +14,9 @@ caffe
 ceph
 compat-opencv-soname32
 compat-opencv-soname33
-compat-opencv-soname34
 conda
 darkflow
 dask
-deprecated-Cython
-deprecated-python-dldt
 dldt
 dldt-model-optimizer
 gensim
@@ -34,6 +31,8 @@ ngraph
 nltk
 numba
 numpy-stl
+onnx
+open_model_zoo
 opencv
 pandas
 partd

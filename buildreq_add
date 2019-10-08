@@ -4,6 +4,3 @@ python3-dev
 gfortran
 openblas
 Cython
-setuptools-legacypython
-python-core
-python-dev
