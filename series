@@ -1,4 +1,3 @@
-build.patch
 avx2-distutils.patch
 avx2-fortran-distutils.patch
 timestamp.patch

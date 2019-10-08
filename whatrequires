@@ -39,7 +39,6 @@ partd
 patsy
 piglit
 pyemd
-pygtk
 pyside2-setup
 pytools
 pytorch

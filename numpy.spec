@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.17.2
-Release  : 157
+Release  : 158
 URL      : https://files.pythonhosted.org/packages/ac/36/325b27ef698684c38b1fe2e546e2e7ef9cecd7037bcdb35c87efec4356af/numpy-1.17.2.zip
 Source0  : https://files.pythonhosted.org/packages/ac/36/325b27ef698684c38b1fe2e546e2e7ef9cecd7037bcdb35c87efec4356af/numpy-1.17.2.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -26,12 +26,11 @@ BuildRequires : gfortran
 BuildRequires : nose
 BuildRequires : openblas
 BuildRequires : python3-dev
-Patch1: build.patch
-Patch2: avx2-distutils.patch
-Patch3: avx2-fortran-distutils.patch
-Patch4: timestamp.patch
-Patch5: cve-2017-12852.nopatch
-Patch6: 0001-AVX-implementation-with-intrinsic-for-small_correlat_v1.patch
+Patch1: avx2-distutils.patch
+Patch2: avx2-fortran-distutils.patch
+Patch3: timestamp.patch
+Patch4: cve-2017-12852.nopatch
+Patch5: 0001-AVX-implementation-with-intrinsic-for-small_correlat_v1.patch
 
 %description
 - a powerful N-dimensional array object
@@ -98,15 +97,14 @@ python3 components for the numpy package.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch6 -p1
+%patch5 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1570556828
+export SOURCE_DATE_EPOCH=1570568052
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
