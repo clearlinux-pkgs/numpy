@@ -10,7 +10,6 @@ R-fastcluster
 Shapely
 Theano
 bokeh
-caffe
 ceph
 compat-opencv-soname32
 compat-opencv-soname33
@@ -27,6 +26,7 @@ imageio
 matplotlib
 mvn-arrow
 mxnet
+networkx
 ngraph
 nltk
 numba
