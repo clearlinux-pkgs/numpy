@@ -1,0 +1,29 @@
+From bb62cd472376e292e57dc5ca0b0e551bfe9d2bca Mon Sep 17 00:00:00 2001
+From: guowangy <wangyang.guo@intel.com>
+Date: Wed, 11 Dec 2019 11:50:39 +0000
+Subject: [PATCH] make distutils support PGO options
+
+passing flags through CFLAGS and LDFLAGS is not working here
+---
+ numpy/distutils/ccompiler.py | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/numpy/distutils/ccompiler.py b/numpy/distutils/ccompiler.py
+index 14451fa..0beab3d 100644
+--- a/numpy/distutils/ccompiler.py
++++ b/numpy/distutils/ccompiler.py
+@@ -139,6 +139,11 @@ def CCompiler_spawn(self, cmd, display=None):
+         if is_sequence(display):
+             display = ' '.join(list(display))
+     log.info(display)
++    if cmd[0] == 'gcc':  # only hack on gcc
++        opts_str = os.environ.get('PGO_OPTS', None)
++        if opts_str:
++            log.info('append PGO_OPTS: ' + opts_str)
++            cmd += opts_str.split()
+     try:
+         subprocess.check_output(cmd)
+     except subprocess.CalledProcessError as exc:
+-- 
+2.23.0
+

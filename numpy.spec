@@ -29,6 +29,8 @@ Patch3: timestamp.patch
 Patch4: cve-2017-12852.nopatch
 Patch5: 0001-AVX-implementation-with-intrinsic-for-small_correlat_v1.patch
 Patch6: 0001-AVX-Support-for-static-lib.patch
+Patch7: 0001-add-numpy-benchmarks-for-pgo.patch
+Patch8: 0001-make-distutils-support-PGO-options.patch
 
 %description
 - a powerful N-dimensional array object
@@ -97,6 +99,8 @@ python3 components for the numpy package.
 %patch3 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
@@ -113,7 +117,27 @@ export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export MAKEFLAGS=%{?_smp_mflags}
-python3 setup.py build  --fcompiler=gnu95
+
+export OPT_GENERATE="-fprofile-generate -fprofile-dir=/var/tmp/pgo -fprofile-update=atomic -lgcov"
+export OPT_USE="-fprofile-use -fprofile-dir=/var/tmp/pgo -fprofile-correction "
+
+# doing PGO profile build
+NPY_DISTUTILS_APPEND_FLAGS=1 PGO_OPTS="${OPT_GENERATE}" python3 setup.py build --fcompiler=gnu95
+
+# profile using numpy-benchmarks
+export PGO_NUMPY_LIB_PATH=`ls -d $PWD/build/lib.linux-*`
+# *.so.avx512 profiling
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+# *.so.avx2 profiling
+find -name "*.so.avx512" -exec rm {} \;
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+# *.so profiling
+find -name "*.so.avx2" -exec rm {} \;
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+
+# using PGO to compile
+rm -rf build  # make clean
+NPY_DISTUTILS_APPEND_FLAGS=1 PGO_OPTS="${OPT_USE}" python3 setup.py build  --fcompiler=gnu95
 
 %install
 export MAKEFLAGS=%{?_smp_mflags}
