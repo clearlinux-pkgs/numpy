@@ -11,13 +11,12 @@ Shapely
 Theano
 bokeh
 ceph
-compat-opencv-soname32
-compat-opencv-soname33
 conda
 darkflow
 dask
 dldt
 dldt-model-optimizer
+dlib
 gensim
 h5py
 hdmedians
@@ -34,6 +33,7 @@ numpy-stl
 onnx
 open_model_zoo
 opencv
+opt_einsum
 pandas
 partd
 patsy
