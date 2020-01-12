@@ -1,0 +1,52 @@
+From 506081e26a027b501ec9aa2f2f14bac75e2191b4 Mon Sep 17 00:00:00 2001
+From: Guobing Chen <guobing.chen@intel.com>
+Date: Mon, 2 Dec 2019 15:03:22 +0800
+Subject: [PATCH] AVX Support for static lib
+
+Current AVX support does not help on scenarios with static lib.
+This patch will extend existing AVX supporting patches to build AVX
+version static libs. An example usage of this patch is scikit-learn.
+
+Signed-off-by: Guobing Chen <guobing.chen@intel.com>
+---
+ numpy/distutils/unixccompiler.py | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/numpy/distutils/unixccompiler.py b/numpy/distutils/unixccompiler.py
+index ff2aaf5..95cd681 100644
+--- a/numpy/distutils/unixccompiler.py
++++ b/numpy/distutils/unixccompiler.py
+@@ -101,6 +101,10 @@ def UnixCCompiler_create_static_lib(self, objects, output_libname,
+ 
+     output_filename = \
+                     self.library_filename(output_libname, output_dir=output_dir)
++    output_filename_avx2 = \
++                    self.library_filename(output_libname + "-avx2", output_dir=output_dir)
++    output_filename_avx512 = \
++                    self.library_filename(output_libname + "-avx512", output_dir=output_dir)
+ 
+     if self._need_link(objects, output_filename):
+         try:
+@@ -108,6 +112,8 @@ def UnixCCompiler_create_static_lib(self, objects, output_libname,
+             # and recreate.
+             # Also, ar on OS X doesn't handle updating universal archives
+             os.unlink(output_filename)
++            os.unlink(output_filename_avx2)
++            os.unlink(output_filename_avx512)
+         except (IOError, OSError):
+             pass
+         self.mkpath(os.path.dirname(output_filename))
+@@ -120,6 +126,10 @@ def UnixCCompiler_create_static_lib(self, objects, output_libname,
+                            len(objects), output_filename)
+             self.spawn(self.archiver + [output_filename] + objects,
+                        display = display)
++            self.spawn(self.archiver + [output_filename_avx2] + [obj + ".avx2" for obj in objects],
++                       display = display)
++            self.spawn(self.archiver + [output_filename_avx512] + [obj + ".avx512" for obj in objects],
++                       display = display)
+ 
+         # Not many Unices required ranlib anymore -- SunOS 4.x is, I
+         # think the only major Unix that does.  Maybe we need some
+-- 
+2.24.0
+
