@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.18.1
-Release  : 167
+Release  : 168
 URL      : https://files.pythonhosted.org/packages/40/de/0ea5092b8bfd2e3aa6fdbb2e499a9f9adf810992884d414defc1573dca3f/numpy-1.18.1.zip
 Source0  : https://files.pythonhosted.org/packages/40/de/0ea5092b8bfd2e3aa6fdbb2e499a9f9adf810992884d414defc1573dca3f/numpy-1.18.1.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
