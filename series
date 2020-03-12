@@ -9,3 +9,5 @@ cve-2017-12852.nopatch
 #use-avx512f-for-numpy-SIMD-instructions.patch
 #fast_except.patch
 #CVE-2019-6446.patch
+0001-add-numpy-benchmarks-for-pgo.patch
+0001-make-distutils-support-PGO-options.patch

@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.18.1
-Release  : 169
+Release  : 170
 URL      : https://files.pythonhosted.org/packages/40/de/0ea5092b8bfd2e3aa6fdbb2e499a9f9adf810992884d414defc1573dca3f/numpy-1.18.1.zip
 Source0  : https://files.pythonhosted.org/packages/40/de/0ea5092b8bfd2e3aa6fdbb2e499a9f9adf810992884d414defc1573dca3f/numpy-1.18.1.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -29,12 +29,22 @@ Patch3: timestamp.patch
 Patch4: cve-2017-12852.nopatch
 Patch5: 0001-AVX-implementation-with-intrinsic-for-small_correlat_v1.patch
 Patch6: 0001-AVX-Support-for-static-lib.patch
+Patch7: 0001-add-numpy-benchmarks-for-pgo.patch
+Patch8: 0001-make-distutils-support-PGO-options.patch
 
 %description
-cdoc
-====
-This is a simple Doxygen project for building NumPy C code documentation,
-with docstrings extracted from the C sources themselves.
+- a powerful N-dimensional array object
+        - sophisticated (broadcasting) functions
+        - tools for integrating C/C++ and Fortran code
+        - useful linear algebra, Fourier transform, and random number capabilities
+        - and much more
+        
+        Besides its obvious scientific uses, NumPy can also be used as an efficient
+        multi-dimensional container of generic data. Arbitrary data-types can be
+        defined. This allows NumPy to seamlessly and speedily integrate with a wide
+        variety of databases.
+        
+        All NumPy wheels distributed on PyPI are BSD licensed.
 
 %package bin
 Summary: bin components for the numpy package.
@@ -50,7 +60,6 @@ Summary: dev components for the numpy package.
 Group: Development
 Requires: numpy-bin = %{version}-%{release}
 Provides: numpy-devel = %{version}-%{release}
-Requires: numpy = %{version}-%{release}
 Requires: numpy = %{version}-%{release}
 
 %description dev
@@ -92,25 +101,50 @@ cd %{_builddir}/numpy-1.18.1
 %patch3 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1583188587
-# -Werror is for werrorists
+export SOURCE_DATE_EPOCH=1584011878
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export MAKEFLAGS=%{?_smp_mflags}
 python3 setup.py build  --fcompiler=gnu95
 
+## build_append content
+export OPT_GENERATE="-fprofile-generate -fprofile-dir=/var/tmp/pgo -fprofile-update=atomic -lgcov"
+export OPT_USE="-fprofile-use -fprofile-dir=/var/tmp/pgo -fprofile-correction "
+
+# doing PGO profile build
+rm -rf build  # make clean
+NPY_DISTUTILS_APPEND_FLAGS=1 PGO_OPTS="${OPT_GENERATE}" python3 setup.py build --fcompiler=gnu95
+
+# profile using numpy-benchmarks
+export PGO_NUMPY_LIB_PATH=`ls -d $PWD/build/lib.linux-*`
+# *.so.avx512 profiling
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+# *.so.avx2 profiling
+find -name "*.so.avx512" -exec rm {} \;
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+# *.so profiling
+find -name "*.so.avx2" -exec rm {} \;
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+
+# using PGO to compile
+rm -rf build  # make clean
+NPY_DISTUTILS_APPEND_FLAGS=1 PGO_OPTS="${OPT_USE}" python3 setup.py build  --fcompiler=gnu95
+
+## build_append end
 %install
 export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
@@ -120,6 +154,8 @@ cp %{_builddir}/numpy-1.18.1/doc/source/license.rst %{buildroot}/usr/share/packa
 cp %{_builddir}/numpy-1.18.1/doc/sphinxext/LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/df4f727b25238b8a4be050714fe3f1cb06b17f75
 cp %{_builddir}/numpy-1.18.1/numpy/linalg/lapack_lite/LICENSE.txt %{buildroot}/usr/share/package-licenses/numpy/3ddf920aa10c8c6ea0c87d218af74651ea7d16d3
 cp %{_builddir}/numpy-1.18.1/numpy/ma/LICENSE %{buildroot}/usr/share/package-licenses/numpy/85f84e10061f078b2cfaa62239c3a4bde1355f34
+cp %{_builddir}/numpy-1.18.1/numpy/random/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/64796c34e3592909154742074f735b89171a4418
+cp %{_builddir}/numpy-1.18.1/numpy/random/src/distributions/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/df1c41ca8a294222a81f70a142832d6566fbd889
 cp %{_builddir}/numpy-1.18.1/numpy/random/src/mt19937/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/50faca55f553c4ecd9f20c020176ca65324d3604
 cp %{_builddir}/numpy-1.18.1/numpy/random/src/pcg64/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/752f3cb872e3c7a6e096746e3648acaf2e065c96
 cp %{_builddir}/numpy-1.18.1/numpy/random/src/philox/LICENSE.md %{buildroot}/usr/share/package-licenses/numpy/c107ade2df71a8954740468bbaa8b15e0ef4cb8b
@@ -174,9 +210,11 @@ echo ----[ mark ]----
 /usr/share/package-licenses/numpy/341dccd98f25cfc90429aa52a5639159a574a0bf
 /usr/share/package-licenses/numpy/3ddf920aa10c8c6ea0c87d218af74651ea7d16d3
 /usr/share/package-licenses/numpy/50faca55f553c4ecd9f20c020176ca65324d3604
+/usr/share/package-licenses/numpy/64796c34e3592909154742074f735b89171a4418
 /usr/share/package-licenses/numpy/752f3cb872e3c7a6e096746e3648acaf2e065c96
 /usr/share/package-licenses/numpy/85f84e10061f078b2cfaa62239c3a4bde1355f34
 /usr/share/package-licenses/numpy/c107ade2df71a8954740468bbaa8b15e0ef4cb8b
+/usr/share/package-licenses/numpy/df1c41ca8a294222a81f70a142832d6566fbd889
 /usr/share/package-licenses/numpy/df4f727b25238b8a4be050714fe3f1cb06b17f75
 /usr/share/package-licenses/numpy/f853f54fdd704c7d99fc6eb5c8e895f3a7764f08
 /usr/share/package-licenses/numpy/fd2e79f66abba5b94347c2df9ca6cf3584b0c517
