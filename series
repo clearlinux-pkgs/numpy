@@ -11,3 +11,4 @@ cve-2017-12852.nopatch
 #CVE-2019-6446.patch
 0001-add-numpy-benchmarks-for-pgo.patch
 0001-make-distutils-support-PGO-options.patch
+0001-AVX512-intrinsic-for-float64-np-exp.patch

@@ -1,0 +1,505 @@
+From fe0aecc144c09fe04d6be1a13ca86a51a08a90ad Mon Sep 17 00:00:00 2001
+From: Gengxin Xie <gengxin.xie@intel.com>
+Date: Thu, 9 Apr 2020 10:29:00 +0800
+Subject: [PATCH] AVX512 implementation with intrinsic for np.exp() when input
+ is np.float64
+
+---
+ numpy/core/code_generators/generate_umath.py |   1 +
+ numpy/core/include/numpy/npy_math.h          |  47 -----
+ numpy/core/src/umath/loops.c.src             |  19 ++
+ numpy/core/src/umath/loops.h.src             |   6 +
+ numpy/core/src/umath/npy_simd_data.h         | 137 ++++++++++++++
+ numpy/core/src/umath/simd.inc.src            | 187 +++++++++++++++++++
+ 6 files changed, 350 insertions(+), 47 deletions(-)
+ create mode 100644 numpy/core/src/umath/npy_simd_data.h
+
+diff --git a/numpy/core/code_generators/generate_umath.py b/numpy/core/code_generators/generate_umath.py
+index 6d76f7c..4c4e85d 100644
+--- a/numpy/core/code_generators/generate_umath.py
++++ b/numpy/core/code_generators/generate_umath.py
+@@ -719,6 +719,7 @@ defdict = {
+           None,
+           TD('e', f='exp', astype={'e':'f'}),
+           TD('f', simd=[('fma', 'f'), ('avx512f', 'f')]),
++          TD('d', simd=[('avx512f', 'd')]),
+           TD('fdg' + cmplx, f='exp'),
+           TD(P, f='exp'),
+           ),
+diff --git a/numpy/core/include/numpy/npy_math.h b/numpy/core/include/numpy/npy_math.h
+index 69e690f..a07f495 100644
+--- a/numpy/core/include/numpy/npy_math.h
++++ b/numpy/core/include/numpy/npy_math.h
+@@ -113,53 +113,6 @@ NPY_INLINE static float __npy_nzerof(void)
+ #define NPY_SQRT2l    1.414213562373095048801688724209698079L /* sqrt(2) */
+ #define NPY_SQRT1_2l  0.707106781186547524400844362104849039L /* 1/sqrt(2) */
+ 
+-/*
+- * Constants used in vector implementation of exp(x)
+- */
+-#define NPY_RINT_CVT_MAGICf 0x1.800000p+23f
+-#define NPY_CODY_WAITE_LOGE_2_HIGHf -6.93145752e-1f
+-#define NPY_CODY_WAITE_LOGE_2_LOWf -1.42860677e-6f
+-#define NPY_COEFF_P0_EXPf 9.999999999980870924916e-01f
+-#define NPY_COEFF_P1_EXPf 7.257664613233124478488e-01f
+-#define NPY_COEFF_P2_EXPf 2.473615434895520810817e-01f
+-#define NPY_COEFF_P3_EXPf 5.114512081637298353406e-02f
+-#define NPY_COEFF_P4_EXPf 6.757896990527504603057e-03f
+-#define NPY_COEFF_P5_EXPf 5.082762527590693718096e-04f
+-#define NPY_COEFF_Q0_EXPf 1.000000000000000000000e+00f
+-#define NPY_COEFF_Q1_EXPf -2.742335390411667452936e-01f
+-#define NPY_COEFF_Q2_EXPf 2.159509375685829852307e-02f
+-
+-/*
+- * Constants used in vector implementation of log(x)
+- */
+-#define NPY_COEFF_P0_LOGf 0.000000000000000000000e+00f
+-#define NPY_COEFF_P1_LOGf 9.999999999999998702752e-01f
+-#define NPY_COEFF_P2_LOGf 2.112677543073053063722e+00f
+-#define NPY_COEFF_P3_LOGf 1.480000633576506585156e+00f
+-#define NPY_COEFF_P4_LOGf 3.808837741388407920751e-01f
+-#define NPY_COEFF_P5_LOGf 2.589979117907922693523e-02f
+-#define NPY_COEFF_Q0_LOGf 1.000000000000000000000e+00f
+-#define NPY_COEFF_Q1_LOGf 2.612677543073109236779e+00f
+-#define NPY_COEFF_Q2_LOGf 2.453006071784736363091e+00f
+-#define NPY_COEFF_Q3_LOGf 9.864942958519418960339e-01f
+-#define NPY_COEFF_Q4_LOGf 1.546476374983906719538e-01f
+-#define NPY_COEFF_Q5_LOGf 5.875095403124574342950e-03f
+-/*
+- * Constants used in vector implementation of sinf/cosf(x)
+- */
+-#define NPY_TWO_O_PIf 0x1.45f306p-1f
+-#define NPY_CODY_WAITE_PI_O_2_HIGHf -0x1.921fb0p+00f
+-#define NPY_CODY_WAITE_PI_O_2_MEDf -0x1.5110b4p-22f
+-#define NPY_CODY_WAITE_PI_O_2_LOWf -0x1.846988p-48f
+-#define NPY_COEFF_INVF0_COSINEf 0x1.000000p+00f
+-#define NPY_COEFF_INVF2_COSINEf -0x1.000000p-01f
+-#define NPY_COEFF_INVF4_COSINEf 0x1.55553cp-05f
+-#define NPY_COEFF_INVF6_COSINEf -0x1.6c06dcp-10f
+-#define NPY_COEFF_INVF8_COSINEf 0x1.98e616p-16f
+-#define NPY_COEFF_INVF3_SINEf -0x1.555556p-03f
+-#define NPY_COEFF_INVF5_SINEf 0x1.11119ap-07f
+-#define NPY_COEFF_INVF7_SINEf -0x1.a06bbap-13f
+-#define NPY_COEFF_INVF9_SINEf 0x1.7d3bbcp-19f
+ /*
+  * Integer functions.
+  */
+diff --git a/numpy/core/src/umath/loops.c.src b/numpy/core/src/umath/loops.c.src
+index 8a2e5bc..7280006 100644
+--- a/numpy/core/src/umath/loops.c.src
++++ b/numpy/core/src/umath/loops.c.src
+@@ -1558,6 +1558,15 @@ FLOAT_@func@(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSE
+ 
+ /**end repeat**/
+ 
++NPY_NO_EXPORT NPY_GCC_OPT_3 void
++DOUBLE_exp(char **args, npy_intp const *dimensions, npy_intp const *steps, void *NPY_UNUSED(data))
++{
++    UNARY_LOOP {
++        const npy_double in1 = *(npy_double *)ip1;
++        *(npy_double *)op1 = npy_exp(in1);
++    }
++}
++
+ /**begin repeat
+  * #isa = avx512f, fma#
+  * #ISA = AVX512F, FMA#
+@@ -1688,6 +1697,16 @@ FLOAT_@func@_@isa@(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY
+ /**end repeat1**/
+ /**end repeat**/
+ 
++NPY_NO_EXPORT NPY_GCC_OPT_3 void
++DOUBLE_exp_avx512f(char **args, npy_intp const *dimensions, npy_intp const *steps, void *NPY_UNUSED(data))
++{
++    if (!run_unary_avx512f_exp_DOUBLE(args, dimensions, steps)) {
++        UNARY_LOOP {
++            const npy_double in1 = *(npy_double *)ip1;
++            *(npy_double *)op1 = npy_exp(in1);
++        }
++    }
++}
+ 
+ /**begin repeat
+  * Float types
+diff --git a/numpy/core/src/umath/loops.h.src b/numpy/core/src/umath/loops.h.src
+index 7558de0..4c1efc5 100644
+--- a/numpy/core/src/umath/loops.h.src
++++ b/numpy/core/src/umath/loops.h.src
+@@ -188,6 +188,12 @@ NPY_NO_EXPORT void
+ /**end repeat1**/
+ /**end repeat**/
+ 
++NPY_NO_EXPORT void
++DOUBLE_exp(char **args, npy_intp const *dimensions, npy_intp const *steps, void *NPY_UNUSED(func));
++
++NPY_NO_EXPORT void
++DOUBLE_exp_avx512f(char **args, npy_intp const *dimensions, npy_intp const *steps, void *NPY_UNUSED(func));
++
+ /**begin repeat
+  *  #func = sin, cos, exp, log#
+  */
+diff --git a/numpy/core/src/umath/npy_simd_data.h b/numpy/core/src/umath/npy_simd_data.h
+new file mode 100644
+index 0000000..36c8b6c
+--- /dev/null
++++ b/numpy/core/src/umath/npy_simd_data.h
+@@ -0,0 +1,137 @@
++#ifndef __NPY_SIMD_DATA_H_
++#define __NPY_SIMD_DATA_H_
++#if defined HAVE_ATTRIBUTE_TARGET_AVX512F_WITH_INTRINSICS && defined  NPY_HAVE_SSE2_INTRINSICS
++/*
++ * Constants used in vector implementation of float64 exp(x)
++ */
++#define NPY_RINT_CVT_MAGIC 0x1.8p52
++#define NPY_INV_LN2_MUL_32 0x1.71547652b82fep+5
++#define NPY_TANG_NEG_L1 -0x1.62e42fefp-6
++#define NPY_TANG_NEG_L2 -0x1.473de6af278edp-39
++#define NPY_TANG_A1 0x1p-1
++#define NPY_TANG_A2 0x1.5555555548f7cp-3
++#define NPY_TANG_A3 0x1.5555555545d4ep-5
++#define NPY_TANG_A4 0x1.11115b7aa905ep-7
++#define NPY_TANG_A5 0x1.6c1728d739765p-10
++
++/* Lookup table for 2^(j/32) */
++static npy_uint64 EXP_Table_top[32] = {
++    0x3FF0000000000000,
++    0x3FF059B0D3158540,
++    0x3FF0B5586CF98900,
++    0x3FF11301D0125B40,
++    0x3FF172B83C7D5140,
++    0x3FF1D4873168B980,
++    0x3FF2387A6E756200,
++    0x3FF29E9DF51FDEC0,
++    0x3FF306FE0A31B700,
++    0x3FF371A7373AA9C0,
++    0x3FF3DEA64C123400,
++    0x3FF44E0860618900,
++    0x3FF4BFDAD5362A00,
++    0x3FF5342B569D4F80,
++    0x3FF5AB07DD485400,
++    0x3FF6247EB03A5580,
++    0x3FF6A09E667F3BC0,
++    0x3FF71F75E8EC5F40,
++    0x3FF7A11473EB0180,
++    0x3FF82589994CCE00,
++    0x3FF8ACE5422AA0C0,
++    0x3FF93737B0CDC5C0,
++    0x3FF9C49182A3F080,
++    0x3FFA5503B23E2540,
++    0x3FFAE89F995AD380,
++    0x3FFB7F76F2FB5E40,
++    0x3FFC199BDD855280,
++    0x3FFCB720DCEF9040,
++    0x3FFD5818DCFBA480,
++    0x3FFDFC97337B9B40,
++    0x3FFEA4AFA2A490C0,
++    0x3FFF50765B6E4540,
++};
++
++static npy_uint64 EXP_Table_tail[32] = {
++    0x0000000000000000,
++    0x3D0A1D73E2A475B4,
++    0x3CEEC5317256E308,
++    0x3CF0A4EBBF1AED93,
++    0x3D0D6E6FBE462876,
++    0x3D053C02DC0144C8,
++    0x3D0C3360FD6D8E0B,
++    0x3D009612E8AFAD12,
++    0x3CF52DE8D5A46306,
++    0x3CE54E28AA05E8A9,
++    0x3D011ADA0911F09F,
++    0x3D068189B7A04EF8,
++    0x3D038EA1CBD7F621,
++    0x3CBDF0A83C49D86A,
++    0x3D04AC64980A8C8F,
++    0x3CD2C7C3E81BF4B7,
++    0x3CE921165F626CDD,
++    0x3D09EE91B8797785,
++    0x3CDB5F54408FDB37,
++    0x3CF28ACF88AFAB35,
++    0x3CFB5BA7C55A192D,
++    0x3D027A280E1F92A0,
++    0x3CF01C7C46B071F3,
++    0x3CFC8B424491CAF8,
++    0x3D06AF439A68BB99,
++    0x3CDBAA9EC206AD4F,
++    0x3CFC2220CB12A092,
++    0x3D048A81E5E8F4A5,
++    0x3CDC976816BAD9B8,
++    0x3CFEB968CAC39ED3,
++    0x3CF9858F73A18F5E,
++    0x3C99D3E12DD8A18B,
++};
++#endif
++
++/*
++ * Constants used in vector implementation of exp(x)
++ */
++#define NPY_RINT_CVT_MAGICf 0x1.800000p+23f
++#define NPY_CODY_WAITE_LOGE_2_HIGHf -6.93145752e-1f
++#define NPY_CODY_WAITE_LOGE_2_LOWf -1.42860677e-6f
++#define NPY_COEFF_P0_EXPf 9.999999999980870924916e-01f
++#define NPY_COEFF_P1_EXPf 7.257664613233124478488e-01f
++#define NPY_COEFF_P2_EXPf 2.473615434895520810817e-01f
++#define NPY_COEFF_P3_EXPf 5.114512081637298353406e-02f
++#define NPY_COEFF_P4_EXPf 6.757896990527504603057e-03f
++#define NPY_COEFF_P5_EXPf 5.082762527590693718096e-04f
++#define NPY_COEFF_Q0_EXPf 1.000000000000000000000e+00f
++#define NPY_COEFF_Q1_EXPf -2.742335390411667452936e-01f
++#define NPY_COEFF_Q2_EXPf 2.159509375685829852307e-02f
++
++/*
++ * Constants used in vector implementation of log(x)
++ */
++#define NPY_COEFF_P0_LOGf 0.000000000000000000000e+00f
++#define NPY_COEFF_P1_LOGf 9.999999999999998702752e-01f
++#define NPY_COEFF_P2_LOGf 2.112677543073053063722e+00f
++#define NPY_COEFF_P3_LOGf 1.480000633576506585156e+00f
++#define NPY_COEFF_P4_LOGf 3.808837741388407920751e-01f
++#define NPY_COEFF_P5_LOGf 2.589979117907922693523e-02f
++#define NPY_COEFF_Q0_LOGf 1.000000000000000000000e+00f
++#define NPY_COEFF_Q1_LOGf 2.612677543073109236779e+00f
++#define NPY_COEFF_Q2_LOGf 2.453006071784736363091e+00f
++#define NPY_COEFF_Q3_LOGf 9.864942958519418960339e-01f
++#define NPY_COEFF_Q4_LOGf 1.546476374983906719538e-01f
++#define NPY_COEFF_Q5_LOGf 5.875095403124574342950e-03f
++/*
++ * Constants used in vector implementation of sinf/cosf(x)
++ */
++#define NPY_TWO_O_PIf 0x1.45f306p-1f
++#define NPY_CODY_WAITE_PI_O_2_HIGHf -0x1.921fb0p+00f
++#define NPY_CODY_WAITE_PI_O_2_MEDf -0x1.5110b4p-22f
++#define NPY_CODY_WAITE_PI_O_2_LOWf -0x1.846988p-48f
++#define NPY_COEFF_INVF0_COSINEf 0x1.000000p+00f
++#define NPY_COEFF_INVF2_COSINEf -0x1.000000p-01f
++#define NPY_COEFF_INVF4_COSINEf 0x1.55553cp-05f
++#define NPY_COEFF_INVF6_COSINEf -0x1.6c06dcp-10f
++#define NPY_COEFF_INVF8_COSINEf 0x1.98e616p-16f
++#define NPY_COEFF_INVF3_SINEf -0x1.555556p-03f
++#define NPY_COEFF_INVF5_SINEf 0x1.11119ap-07f
++#define NPY_COEFF_INVF7_SINEf -0x1.a06bbap-13f
++#define NPY_COEFF_INVF9_SINEf 0x1.7d3bbcp-19f
++
++#endif
+diff --git a/numpy/core/src/umath/simd.inc.src b/numpy/core/src/umath/simd.inc.src
+index 74f52cc..99dadf2 100644
+--- a/numpy/core/src/umath/simd.inc.src
++++ b/numpy/core/src/umath/simd.inc.src
+@@ -18,6 +18,7 @@
+ #include "lowlevel_strided_loops.h"
+ #include "numpy/npy_common.h"
+ #include "numpy/npy_math.h"
++#include "npy_simd_data.h"
+ #ifdef NPY_HAVE_SSE2_INTRINSICS
+ #include <emmintrin.h>
+ #if !defined(_MSC_VER) || _MSC_VER >= 1600
+@@ -215,6 +216,25 @@ run_unary_@isa@_sincos_FLOAT(char **args, npy_intp *dimensions, npy_intp *steps,
+ 
+ /**end repeat**/
+ 
++#if defined HAVE_ATTRIBUTE_TARGET_AVX512F_WITH_INTRINSICS && defined  NPY_HAVE_SSE2_INTRINSICS
++static NPY_INLINE void
++AVX512F_exp_DOUBLE(npy_double *, npy_double *, const npy_intp n, const npy_intp stride);
++#endif
++static NPY_INLINE int
++run_unary_avx512f_exp_DOUBLE(char **args, npy_intp const *dimensions, npy_intp const *steps)
++{
++#if defined HAVE_ATTRIBUTE_TARGET_AVX512F_WITH_INTRINSICS && defined NPY_HAVE_SSE2_INTRINSICS
++#if !(defined(__clang__) && (__clang_major__ < 10 || (__clang_major__ == 10 && __clang_minor__ < 1)))
++    if (IS_OUTPUT_BLOCKABLE_UNARY(sizeof(npy_double), 64)) {
++        AVX512F_exp_DOUBLE((npy_double*)args[1], (npy_double*)args[0], dimensions[0], steps[0]);
++        return 1;
++    }
++    else
++        return 0;
++#endif
++#endif
++    return 0;
++}
+ 
+ /**begin repeat
+  * Float types
+@@ -1523,6 +1543,22 @@ avx512_scalef_ps(__m512 poly, __m512 quadrant)
+ {
+     return _mm512_scalef_ps(poly, quadrant);
+ }
++
++static NPY_INLINE NPY_GCC_OPT_3 NPY_GCC_TARGET_AVX512F __m512d
++avx512_permute_x4var_pd(__m512d t0,
++                        __m512d t1,
++                        __m512d t2,
++                        __m512d t3,
++                        __m512i index)
++{
++
++    __mmask8 lut_mask = _mm512_cmp_epi64_mask(index, _mm512_set1_epi64(15),
++                                  _MM_CMPINT_GT);
++    __m512d res1 = _mm512_permutex2var_pd(t0, index, t1);
++    __m512d res2 = _mm512_permutex2var_pd(t2, index, t3);
++    return _mm512_mask_blend_pd(lut_mask, res1, res2);
++}
++
+ /**begin repeat
+  *  #vsub  = ps, pd#
+  *  #epi_vsub  = epi32, epi64#
+@@ -2258,6 +2294,157 @@ static NPY_GCC_OPT_3 NPY_GCC_TARGET_@ISA@ void
+ #endif
+ /**end repeat**/
+ 
++/*
++ * Vectorized implementation of exp double using AVX512
++ * Reference: Tang, P.T.P., "Table-driven implementation of the
++ *  exponential function in IEEE floating-point
++ *  arithmetic," ACM Transactions on Mathematical
++ *  Software, vol. 15, pp. 144-157, 1989.
++ * 1) if x > mTH_max or x is INF; return INF (overflow)
++ * 2) if x < mTH_min; return 0.0f (underflow)
++ * 3) if abs(x) < mTH_nearzero; return 1.0f + x
++ * 4) if x is Nan; return Nan
++ * 5) Range reduction:
++ *    x = (32m + j)ln2 / 32 + r; r in [-ln2/64, ln2/64]
++ * 6) exp(r) - 1 is approximated by a polynomial function p(r)
++ *    exp(x) = 2^m(2^(j/32) + 2^(j/32)p(r));
++ */
++#if defined HAVE_ATTRIBUTE_TARGET_AVX512F_WITH_INTRINSICS
++#if !(defined(__clang__) && (__clang_major__ < 10 || (__clang_major__ == 10 && __clang_minor__ < 1)))
++static NPY_GCC_OPT_3 NPY_GCC_TARGET_AVX512F void
++AVX512F_exp_DOUBLE(npy_double * op,
++                npy_double * ip,
++                const npy_intp array_size,
++                const npy_intp steps)
++{
++    npy_intp num_remaining_elements = array_size;
++    const npy_intp stride = steps / (npy_intp)sizeof(npy_double);
++    const npy_int num_lanes = 64 / (npy_intp)sizeof(npy_double);
++    npy_int32 indexarr[8];
++    for (npy_int32 ii = 0; ii < 8; ii++) {
++        indexarr[ii] = ii*stride;
++    }
++
++    __m512d InvLn2N = _mm512_set1_pd(NPY_INV_LN2_MUL_32);
++    __m512d mShift = _mm512_set1_pd(NPY_RINT_CVT_MAGIC);
++    __m512d mNegL1 = _mm512_set1_pd(NPY_TANG_NEG_L1);
++    __m512d mNegL2 = _mm512_set1_pd(NPY_TANG_NEG_L2);
++    __m512i mMod = _mm512_set1_epi64(0x1f);
++    __m512d mA1 = _mm512_set1_pd(NPY_TANG_A1);
++    __m512d mA2 = _mm512_set1_pd(NPY_TANG_A2);
++    __m512d mA3 = _mm512_set1_pd(NPY_TANG_A3);
++    __m512d mA4 = _mm512_set1_pd(NPY_TANG_A4);
++    __m512d mA5 = _mm512_set1_pd(NPY_TANG_A5);
++    __m512d mTH_nearzero = _mm512_set1_pd(0x1p-54);
++    __m512d mTH_max = _mm512_set1_pd(0x1.62e42fefa39efp+9);
++    __m512d mTH_min = _mm512_set1_pd(-0x1.74910d52d3053p+9);
++    __m512d mTH_inf = _mm512_set1_pd(NPY_INFINITY);
++    __m512d zeros_d = _mm512_set1_pd(0.0f);
++    __m512d ones_d = _mm512_set1_pd(1.0f);
++    __m256i vindex = _mm256_loadu_si256((__m256i*)&indexarr[0]);
++
++    __m512d mTable_top_0 = _mm512_loadu_pd(&(EXP_Table_top[8*0]));
++    __m512d mTable_top_1 = _mm512_loadu_pd(&(EXP_Table_top[8*1]));
++    __m512d mTable_top_2 = _mm512_loadu_pd(&(EXP_Table_top[8*2]));
++    __m512d mTable_top_3 = _mm512_loadu_pd(&(EXP_Table_top[8*3]));
++    __m512d mTable_tail_0 = _mm512_loadu_pd(&(EXP_Table_tail[8*0]));
++    __m512d mTable_tail_1 = _mm512_loadu_pd(&(EXP_Table_tail[8*1]));
++    __m512d mTable_tail_2 = _mm512_loadu_pd(&(EXP_Table_tail[8*2]));
++    __m512d mTable_tail_3 = _mm512_loadu_pd(&(EXP_Table_tail[8*3]));
++
++    __mmask8 overflow_mask = avx512_get_partial_load_mask_pd(0, num_lanes);
++    __mmask8 load_mask = avx512_get_full_load_mask_pd();
++    __mmask8 xmin_mask, xmax_mask, inf_mask, nan_mask, nearzero_mask;
++
++    while (num_remaining_elements > 0) {
++        if (num_remaining_elements < num_lanes) {
++            load_mask = avx512_get_partial_load_mask_pd(num_remaining_elements,
++                                                      num_lanes);
++        }
++
++        __m512d x;
++        if (1 == stride) {
++            x = avx512_masked_load_pd(load_mask, ip);
++        }
++        else {
++            x = avx512_masked_gather_pd(zeros_d, ip, vindex, load_mask);
++        }
++
++        nan_mask = _mm512_cmp_pd_mask(x, x, _CMP_NEQ_UQ);
++        x = avx512_set_masked_lanes_pd(x, zeros_d, nan_mask);
++        xmax_mask = _mm512_cmp_pd_mask(x, mTH_max, _CMP_GT_OQ);
++        xmin_mask = _mm512_cmp_pd_mask(x, mTH_min, _CMP_LT_OQ);
++        inf_mask = _mm512_cmp_pd_mask(x, mTH_inf, _CMP_EQ_OQ);
++        __m512i x_abs = _mm512_and_epi64(_mm512_castpd_si512(x), 
++                                _mm512_set1_epi64(0x7FFFFFFFFFFFFFFF));
++        nearzero_mask = _mm512_cmp_pd_mask(_mm512_castsi512_pd(x_abs), 
++                                    mTH_nearzero, _CMP_LT_OQ);
++        nearzero_mask = _mm512_kxor(nearzero_mask, nan_mask);
++        overflow_mask = _mm512_kor(overflow_mask, 
++                                _mm512_kxor(xmax_mask, inf_mask));
++        x = avx512_set_masked_lanes_pd(x, zeros_d,
++                        _mm512_kor(_mm512_kor(nan_mask, xmin_mask),
++                            _mm512_kor(xmax_mask, nearzero_mask)));
++
++        /* z = x * 32/ln2 */
++        __m512d z = _mm512_mul_pd(x, InvLn2N);
++
++        /* round to nearest */
++        __m512d kd = _mm512_add_pd(z, mShift);
++        __m512i ki = _mm512_castpd_si512(kd);
++        kd = _mm512_sub_pd(kd, mShift);
++
++        /* r = (x + kd*mNegL1) + kd*mNegL2 */
++        __m512d r1 = _mm512_fmadd_pd(kd, mNegL1, x);
++        __m512d r2 = _mm512_mul_pd(kd, mNegL2);
++        __m512d r = _mm512_add_pd(r1,r2);
++
++        /* Polynomial approximation for exp(r) - 1 */
++        __m512d q = _mm512_fmadd_pd(mA5, r, mA4);
++        q = _mm512_fmadd_pd(q, r, mA3);
++        q = _mm512_fmadd_pd(q, r, mA2);
++        q = _mm512_fmadd_pd(q, r, mA1);
++        q = _mm512_mul_pd(q, r);
++        __m512d p = _mm512_fmadd_pd(r, q, r2);;
++        p = _mm512_add_pd(r1, p);
++
++        /* Get 2^(j/32) from lookup table */
++        __m512i j = _mm512_and_epi64(ki, mMod);
++        __m512d top = avx512_permute_x4var_pd(mTable_top_0, mTable_top_1,
++                                  mTable_top_2, mTable_top_3, j);
++        __m512d tail = avx512_permute_x4var_pd(mTable_tail_0, mTable_tail_1,
++                                  mTable_tail_2, mTable_tail_3, j);
++
++        /* 
++         * s = top + tail;
++         * exp(x) = 2^m * (top + (tail + s * p)); 
++         */
++        __m512d s = _mm512_add_pd(top, tail);
++        __m512d res = _mm512_fmadd_pd(s, p, tail);
++        res = _mm512_add_pd(res, top);
++        res= _mm512_scalef_pd(res, _mm512_div_pd(kd, _mm512_set1_pd(32)));
++
++        /* return special cases */
++        res = avx512_set_masked_lanes_pd(res, _mm512_add_pd(x, ones_d), 
++                                        nearzero_mask);
++        res = avx512_set_masked_lanes_pd(res, _mm512_set1_pd(NPY_NAN), 
++                                        nan_mask);
++        res = avx512_set_masked_lanes_pd(res, mTH_inf, xmax_mask);
++        res = avx512_set_masked_lanes_pd(res, zeros_d, xmin_mask);
++
++        _mm512_mask_storeu_pd(op, load_mask, res);
++
++        ip += num_lanes * stride;
++        op += num_lanes;
++        num_remaining_elements -= num_lanes;
++    }
++    if (overflow_mask) {
++        npy_set_floatstatus_overflow();
++    }
++}
++#endif
++#endif
++
+ /*
+  *****************************************************************************
+  **                           BOOL LOOPS
+-- 
+2.24.1
+

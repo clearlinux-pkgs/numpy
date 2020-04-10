@@ -9,7 +9,6 @@ QGIS
 R-fastcluster
 Shapely
 Theano
-bkcharts
 bokeh
 ceph
 compat-opencv-soname41
@@ -27,7 +26,6 @@ horovod
 hypothesis
 imageio
 matplotlib
-mvn-arrow
 mxnet
 networkx
 ngraph

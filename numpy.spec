@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.18.2
-Release  : 171
+Release  : 172
 URL      : https://files.pythonhosted.org/packages/84/1e/ff467ac56bfeaea51d4a2e72d315c1fe440b20192fea7e460f0f248acac8/numpy-1.18.2.zip
 Source0  : https://files.pythonhosted.org/packages/84/1e/ff467ac56bfeaea51d4a2e72d315c1fe440b20192fea7e460f0f248acac8/numpy-1.18.2.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -31,12 +31,21 @@ Patch5: 0001-AVX-implementation-with-intrinsic-for-small_correlat_v1.patch
 Patch6: 0001-AVX-Support-for-static-lib.patch
 Patch7: 0001-add-numpy-benchmarks-for-pgo.patch
 Patch8: 0001-make-distutils-support-PGO-options.patch
+Patch9: 0001-AVX512-intrinsic-for-float64-np-exp.patch
 
 %description
-cdoc
-====
-This is a simple Doxygen project for building NumPy C code documentation,
-with docstrings extracted from the C sources themselves.
+- a powerful N-dimensional array object
+        - sophisticated (broadcasting) functions
+        - tools for integrating C/C++ and Fortran code
+        - useful linear algebra, Fourier transform, and random number capabilities
+        - and much more
+        
+        Besides its obvious scientific uses, NumPy can also be used as an efficient
+        multi-dimensional container of generic data. Arbitrary data-types can be
+        defined. This allows NumPy to seamlessly and speedily integrate with a wide
+        variety of databases.
+        
+        All NumPy wheels distributed on PyPI are BSD licensed.
 
 %package bin
 Summary: bin components for the numpy package.
@@ -52,7 +61,6 @@ Summary: dev components for the numpy package.
 Group: Development
 Requires: numpy-bin = %{version}-%{release}
 Provides: numpy-devel = %{version}-%{release}
-Requires: numpy = %{version}-%{release}
 Requires: numpy = %{version}-%{release}
 
 %description dev
@@ -96,22 +104,22 @@ cd %{_builddir}/numpy-1.18.2
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1584476328
-# -Werror is for werrorists
+export SOURCE_DATE_EPOCH=1586543853
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
-export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fcf-protection=full -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong "
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FCFLAGS="$FFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FFLAGS="$FFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math -fstack-protector-strong -mzero-caller-saved-regs=used "
 export MAKEFLAGS=%{?_smp_mflags}
 python3 setup.py build  --fcompiler=gnu95
 
