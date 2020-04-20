@@ -29,6 +29,7 @@ matplotlib
 mxnet
 networkx
 ngraph
+nlopt
 nltk
 numba
 numpy-stl
