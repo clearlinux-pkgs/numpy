@@ -1,5 +1,5 @@
 PKG_NAME := numpy
-URL = https://files.pythonhosted.org/packages/2d/f3/795e50e3ea2dc7bc9d1a2eeea9997d5dce63b801e08dfc37c2efce341977/numpy-1.18.4.zip
+URL = https://files.pythonhosted.org/packages/01/1b/d3ddcabd5817be02df0e6ee20d64f77ff6d0d97f83b77f65e98c8a651981/numpy-1.18.5.zip
 ARCHIVES = 
 
 include ../common/Makefile.common
