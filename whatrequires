@@ -13,6 +13,7 @@ Theano
 bokeh
 ceph
 compat-opencv-soname41
+compat-opencv-soname42
 conda
 darkflow
 dask
@@ -57,3 +58,4 @@ tensorflow-serving
 texlive
 tflearn
 websockify
+xgboost

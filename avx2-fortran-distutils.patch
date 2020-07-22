@@ -42,8 +42,8 @@ index 0b1b1ee..abc8329 100644
              self.spawn(command, display=display)
 +            self.spawn(command_avx2, display=display)
 +            self.spawn(command_avx512, display=display)
-         except DistutilsExecError:
-             msg = str(get_exception())
+         except DistutilsExecError as e:
+             msg = str(e)
              raise CompileError(msg)
 @@ -658,21 +666,41 @@ class FCompiler(CCompiler):
                  ld_args = objects + [self.objects]
@@ -84,8 +84,8 @@ index 0b1b1ee..abc8329 100644
                  self.spawn(command)
 +                self.spawn(command_avx2)
 +                self.spawn(command_avx512)
-             except DistutilsExecError:
-                 msg = str(get_exception())
+             except DistutilsExecError as e:
+                 msg = str(e)
                  raise LinkError(msg)
 -- 
 2.10.1
