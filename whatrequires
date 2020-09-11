@@ -12,7 +12,6 @@ Shapely
 Theano
 bokeh
 ceph
-compat-opencv-soname41
 compat-opencv-soname42
 conda
 darkflow
