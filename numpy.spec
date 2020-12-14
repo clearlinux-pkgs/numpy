@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.19.4
-Release  : 186
+Release  : 187
 URL      : https://files.pythonhosted.org/packages/c5/63/a48648ebc57711348420670bb074998f79828291f68aebfff1642be212ec/numpy-1.19.4.zip
 Source0  : https://files.pythonhosted.org/packages/c5/63/a48648ebc57711348420670bb074998f79828291f68aebfff1642be212ec/numpy-1.19.4.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
@@ -107,7 +107,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1604518230
+export SOURCE_DATE_EPOCH=1607986283
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -172,36 +172,36 @@ echo ----[ mark ]----
 %defattr(-,root,root,-)
 /usr/bin/f2py
 /usr/bin/f2py3
-/usr/bin/f2py3.8
+/usr/bin/f2py3.9
 
 %files dev
 %defattr(-,root,root,-)
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/__multiarray_api.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/__ufunc_api.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/_neighborhood_iterator_imp.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/_numpyconfig.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/arrayobject.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/arrayscalars.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/halffloat.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/ndarrayobject.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/ndarraytypes.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/noprefix.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_3kcompat.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_common.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_cpu.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_endian.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_interrupt.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_math.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_no_deprecated_api.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/npy_os.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/numpyconfig.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/old_defines.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/oldnumeric.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/random/bitgen.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/random/distributions.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/ufuncobject.h
-/usr/lib/python3.8/site-packages/numpy/core/include/numpy/utils.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/__multiarray_api.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/__ufunc_api.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/_neighborhood_iterator_imp.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/_numpyconfig.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/arrayobject.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/arrayscalars.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/halffloat.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/ndarrayobject.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/ndarraytypes.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/noprefix.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_3kcompat.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_common.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_cpu.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_endian.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_interrupt.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_math.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_no_deprecated_api.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/npy_os.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/numpyconfig.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/old_defines.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/oldnumeric.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/random/bitgen.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/random/distributions.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/ufuncobject.h
+/usr/lib/python3.9/site-packages/numpy/core/include/numpy/utils.h
 
 %files license
 %defattr(0644,root,root,0755)
