@@ -37,6 +37,7 @@ opt_einsum
 pandas
 partd
 patsy
+petastorm
 piglit
 pyside2-setup
 pytorch
