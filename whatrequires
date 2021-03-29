@@ -13,7 +13,6 @@ Theano
 abydos
 bokeh
 ceph
-compat-opencv-soname42
 conda
 darkflow
 dask
@@ -42,7 +41,6 @@ petastorm
 piglit
 pyside2-setup
 pytorch
-pyxDamerauLevenshtein
 scikit-image
 scikit-learn
 scipy
