@@ -19,6 +19,7 @@ dask
 deap
 dm-tree
 gensim
+gst-python
 h5py
 horovod
 hypothesis
@@ -37,10 +38,11 @@ opt_einsum
 pandas
 partd
 patsy
-petastorm
 piglit
 pyside2-setup
+pythran
 pytorch
+scene-alembic
 scikit-image
 scikit-learn
 scipy

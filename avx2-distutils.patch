@@ -6,7 +6,7 @@
                     extra_postargs, display = display)
 +        self.spawn(self.compiler_so + cc_args + ["-march=haswell", "-O3", "-fno-semantic-interposition", "-ffat-lto-objects", "-flto"] + [src, '-o', obj + ".avx2"] +
 +                   extra_postargs, display = display)
-+        self.spawn(self.compiler_so + cc_args + ["-march=skylake-avx512", "-O3", "-fno-semantic-interposition", "-ffat-lto-objects", "-flto", "-mprefer-vector-width=512"] + [src, '-o', obj + ".avx512"] +
++        self.spawn(self.compiler_so + cc_args + ["-march=skylake-avx512", "-O3", "-fno-semantic-interposition", "-ffat-lto-objects", "-flto", "-mprefer-vector-width=256"] + [src, '-o', obj + ".avx512"] +
 +                   extra_postargs, display = display)
 +
      except DistutilsExecError as e:
