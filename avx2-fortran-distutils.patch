@@ -1,17 +1,17 @@
-From 45cfe11b968313fc730cf7a54139f2ce249db68a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: William Douglas <william.douglas@intel.com>
 Date: Mon, 17 Oct 2016 19:57:29 +0000
 Subject: [PATCH] Add avx2 Fortran library
 
 ---
- numpy/distutils/fcompiler/__init__.py | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ numpy/distutils/fcompiler/__init__.py | 35 +++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
 diff --git a/numpy/distutils/fcompiler/__init__.py b/numpy/distutils/fcompiler/__init__.py
-index 0b1b1ee..abc8329 100644
+index d7579e9..d7df434 100644
 --- a/numpy/distutils/fcompiler/__init__.py
 +++ b/numpy/distutils/fcompiler/__init__.py
-@@ -586,6 +586,15 @@ class FCompiler(CCompiler):
+@@ -589,6 +589,15 @@ class FCompiler(CCompiler):
          else:
              o_args = [self.object_switch.strip()+obj]
  
@@ -27,7 +27,7 @@ index 0b1b1ee..abc8329 100644
          assert self.compile_switch.strip()
          s_args = [self.compile_switch, src]
  
-@@ -600,11 +605,17 @@ class FCompiler(CCompiler):
+@@ -603,11 +612,17 @@ class FCompiler(CCompiler):
  
          command = compiler + cc_args + extra_flags + s_args + o_args \
                    + extra_postargs + extra_compile_args
@@ -44,8 +44,8 @@ index 0b1b1ee..abc8329 100644
 +            self.spawn(command_avx512, display=display)
          except DistutilsExecError as e:
              msg = str(e)
-             raise CompileError(msg)
-@@ -658,21 +666,41 @@ class FCompiler(CCompiler):
+             raise CompileError(msg) from None
+@@ -661,21 +676,41 @@ class FCompiler(CCompiler):
                  ld_args = objects + [self.objects]
              else:
                  ld_args = objects + self.objects
@@ -86,7 +86,4 @@ index 0b1b1ee..abc8329 100644
 +                self.spawn(command_avx512)
              except DistutilsExecError as e:
                  msg = str(e)
-                 raise LinkError(msg)
--- 
-2.10.1
-
+                 raise LinkError(msg) from None

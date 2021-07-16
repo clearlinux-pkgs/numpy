@@ -1,7 +1,7 @@
-From 3ab29232efc494fc343891cd1de61260b3018751 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: guowangy <wangyang.guo@intel.com>
 Date: Thu, 5 Dec 2019 15:16:42 +0800
-Subject: [PATCH 1/2] add numpy-benchmarks for pgo
+Subject: [PATCH] add numpy-benchmarks for pgo
 
 ---
  Tools/numpy-benchmarks/README.rst             |  56 ++
@@ -136,7 +136,7 @@ index 0000000..7506731
 +:x
 diff --git a/Tools/numpy-benchmarks/benchall.py b/Tools/numpy-benchmarks/benchall.py
 new file mode 100644
-index 0000000..7747f43
+index 0000000..44b2520
 --- /dev/null
 +++ b/Tools/numpy-benchmarks/benchall.py
 @@ -0,0 +1,66 @@
@@ -637,7 +637,7 @@ index 0000000..4c8695a
 +    return np.sum((pts[None,:] - pts[:, None])**2, -1)**0.5
 diff --git a/Tools/numpy-benchmarks/benchmarks/periodic_dist.py b/Tools/numpy-benchmarks/benchmarks/periodic_dist.py
 new file mode 100644
-index 0000000..a7228b2
+index 0000000..39d30e6
 --- /dev/null
 +++ b/Tools/numpy-benchmarks/benchmarks/periodic_dist.py
 @@ -0,0 +1,36 @@
@@ -645,7 +645,7 @@ index 0000000..a7228b2
 +#run: periodic_dist(x, x, x, L,periodic, periodic, periodic)
 +
 +#pythran export periodic_dist(float [], float[], float[], int, bool, bool, bool)
-+import numpy as np 
++import numpy as np
 +
 +def periodic_dist(x, y, z, L, periodicX, periodicY, periodicZ):
 +    " ""Computes distances between all particles and places the result in a matrix such that the ij th matrix entry corresponds to the distance between particle i and j"" "
@@ -727,7 +727,7 @@ index 0000000..0e73b70
 +    return np.sum(t0 + t1)
 diff --git a/Tools/numpy-benchmarks/benchmarks/slowparts.py b/Tools/numpy-benchmarks/benchmarks/slowparts.py
 new file mode 100644
-index 0000000..5101b44
+index 0000000..39bee5a
 --- /dev/null
 +++ b/Tools/numpy-benchmarks/benchmarks/slowparts.py
 @@ -0,0 +1,17 @@
@@ -746,7 +746,7 @@ index 0000000..5101b44
 +    for k in range(2*d):
 +        for i in range(d):
 +            partialDU[:,:,k,i] = fprime(preDz[k]) * fprime(preWz[i]) * (SRW[i,k] + RSW[i,k]) * yxV[:,:,i]
-+    
++
 +    return partialDU
 diff --git a/Tools/numpy-benchmarks/benchmarks/specialconvolve.py b/Tools/numpy-benchmarks/benchmarks/specialconvolve.py
 new file mode 100644
@@ -780,7 +780,7 @@ index 0000000..1ffa489
 +    return numpy.exp(-harmonic * i - anharmonic * (i ** 2))
 diff --git a/Tools/numpy-benchmarks/benchmarks/wave.py b/Tools/numpy-benchmarks/benchmarks/wave.py
 new file mode 100644
-index 0000000..8d81f76
+index 0000000..c126911
 --- /dev/null
 +++ b/Tools/numpy-benchmarks/benchmarks/wave.py
 @@ -0,0 +1,54 @@
@@ -810,14 +810,14 @@ index 0000000..8d81f76
 +    fvec = np.array([fmag * cosine, fmag * sine])
 +    force[i - 1] -= fvec
 +    force[i] += fvec
-+ 
++
 +  force[0] = force[-1] = 0, 0
 +  force[which][1] += plunk
 +  accel = force / MASS
-+ 
++
 +  # verlet integration
 +  npos = (2 - DAMPING) * cpos - (1 - DAMPING) * ppos + accel * (dt**2)
-+ 
++
 +  masspoints[1] = cpos
 +  masspoints[0] = npos
 +
@@ -1412,6 +1412,3 @@ index 0000000..1ed6530
 +
 +if __name__ == '__main__':
 +    main()
--- 
-2.24.0
-

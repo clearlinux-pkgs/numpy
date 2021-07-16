@@ -1,6 +1,8 @@
---- numpy-1.11.1/numpy/distutils/distutils/unixccompiler.py.org	2016-10-01 23:20:01.926573058 +0000
-+++ numpy-1.11.1/numpy/distutils/unixccompiler.py	2016-10-01 23:23:10.481313816 +0000
-@@ -49,6 +49,11 @@ def UnixCCompiler__compile(self, obj, sr
+diff --git a/numpy/distutils/unixccompiler.py b/numpy/distutils/unixccompiler.py
+index fb91f17..e362e74 100644
+--- a/numpy/distutils/unixccompiler.py
++++ b/numpy/distutils/unixccompiler.py
+@@ -52,6 +52,11 @@ def UnixCCompiler__compile(self, obj, src, ext, cc_args, extra_postargs, pp_opts
      try:
          self.spawn(self.compiler_so + cc_args + [src, '-o', obj] + deps +
                     extra_postargs, display = display)
@@ -11,4 +13,4 @@
 +
      except DistutilsExecError as e:
          msg = str(e)
-         raise CompileError(msg)
+         raise CompileError(msg) from None

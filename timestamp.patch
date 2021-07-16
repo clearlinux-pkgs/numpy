@@ -1,6 +1,8 @@
---- numpy-1.11.1/numpy/f2py/rules.py~	2016-06-25 23:59:40.000000000 +0000
-+++ numpy-1.11.1/numpy/f2py/rules.py	2017-01-15 23:20:33.450580622 +0000
-@@ -114,7 +114,6 @@
+diff --git a/numpy/f2py/rules.py b/numpy/f2py/rules.py
+index 63e47ba..bfd2c74 100755
+--- a/numpy/f2py/rules.py
++++ b/numpy/f2py/rules.py
+@@ -112,7 +112,6 @@ module_rules = {
   * This file is auto-generated with f2py (version:#f2py_version#).
   * f2py is a Fortran to Python Interface Generator (FPIG), Second Edition,
   * written by Pearu Peterson <pearu@cens.ioc.ee>.
