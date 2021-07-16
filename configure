@@ -1,1 +1,2 @@
 --fcompiler=gnu95
+%{?_smp_mflags}

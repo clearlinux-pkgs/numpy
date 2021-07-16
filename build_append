@@ -1,0 +1,21 @@
+export OPT_GENERATE="-fprofile-generate -fprofile-dir=/var/tmp/pgo -fprofile-update=atomic -lgcov"
+export OPT_USE="-fprofile-use -fprofile-dir=/var/tmp/pgo -fprofile-correction "
+
+# doing PGO profile build
+rm -rf build  # make clean
+NPY_DISTUTILS_APPEND_FLAGS=1 PGO_OPTS="${OPT_GENERATE}" python3 setup.py build --fcompiler=gnu95 %{?_smp_mflags}
+
+# profile using numpy-benchmarks
+export PGO_NUMPY_LIB_PATH=`ls -d $PWD/build/lib.linux-*`
+# *.so.avx512 profiling
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+# *.so.avx2 profiling
+find -name "*.so.avx512" -exec rm {} \;
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+# *.so profiling
+find -name "*.so.avx2" -exec rm {} \;
+PYTHONPATH="${PGO_NUMPY_LIB_PATH}" python3 Tools/numpy-benchmarks/benchall.py
+
+# using PGO to compile
+rm -rf build  # make clean
+NPY_DISTUTILS_APPEND_FLAGS=1 PGO_OPTS="${OPT_USE}" python3 setup.py build --fcompiler=gnu95 %{?_smp_mflags}
