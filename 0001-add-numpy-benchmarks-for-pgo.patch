@@ -185,7 +185,7 @@ index 0000000..44b2520
 +
 +def do_bench(fpath, repeat=3, number=40):
 +    name, setup, run = code_gen(fpath)
-+    print(name, end=" ")
++    print(name, end=" ", flush=True)
 +
 +    t = Timer(run, setup, default_timer)
 +    try:
@@ -197,13 +197,13 @@ index 0000000..44b2520
 +    best = min(r)
 +    average = int(numpy.average(r))
 +    std = int(numpy.std(r))
-+    print(best, average, std)
++    print(best, average, std, flush=True)
 +
 +
 +if __name__ == '__main__':
 +    import glob
 +
-+    print('name\tbest\taverage\tstd')
++    print('name\tbest\taverage\tstd', flush=True)
 +    for b in glob.glob(BENCHMARKS_DIR + '/*.py'):
 +        do_bench(b)
 diff --git a/Tools/numpy-benchmarks/benchmarks/arc_distance.py b/Tools/numpy-benchmarks/benchmarks/arc_distance.py
