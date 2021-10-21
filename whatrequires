@@ -13,6 +13,7 @@ Theano
 abydos
 bokeh
 ceph
+codec2
 conda
 darkflow
 dask
