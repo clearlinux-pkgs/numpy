@@ -4,7 +4,7 @@
 #
 Name     : numpy
 Version  : 1.21.3
-Release  : 204
+Release  : 205
 URL      : https://files.pythonhosted.org/packages/5f/d6/ad58ded26556eaeaa8c971e08b6466f17c4ac4d786cd3d800e26ce59cc01/numpy-1.21.3.zip
 Source0  : https://files.pythonhosted.org/packages/5f/d6/ad58ded26556eaeaa8c971e08b6466f17c4ac4d786cd3d800e26ce59cc01/numpy-1.21.3.zip
 Summary  : NumPy is the fundamental package for array computing with Python.
