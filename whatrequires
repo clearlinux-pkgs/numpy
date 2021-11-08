@@ -11,6 +11,7 @@ R-fastcluster
 Shapely
 Theano
 abydos
+aesara
 bokeh
 ceph
 codec2
@@ -43,6 +44,7 @@ piglit
 pyside2-setup
 pythran
 pytorch
+qt6base
 scene-alembic
 scikit-image
 scikit-learn
