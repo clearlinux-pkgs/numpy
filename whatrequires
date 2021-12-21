@@ -1,10 +1,6 @@
 # This file contains recursive sources that require this package
-Cura
 Cython
 Django
-Keras
-Keras_Applications
-Keras_Preprocessing
 PyWavelets
 QGIS
 R-fastcluster
@@ -12,26 +8,16 @@ Shapely
 Theano
 abydos
 aesara
-bokeh
-ceph
 codec2
-conda
 darkflow
-dask
 deap
-dm-tree
 gensim
 gst-python
 h5py
-horovod
-hypothesis
-imageio
 inkscape
 matplotlib
-mxnet
 networkx
 nlopt
-nltk
 numpy-stl
 onnx
 open_model_zoo
@@ -42,7 +28,6 @@ partd
 patsy
 piglit
 pyside2-setup
-pythran
 pytorch
 qt6base
 scene-alembic
@@ -51,10 +36,6 @@ scikit-learn
 scipy
 seaborn
 statsmodels
-tensorboard
-tensorflow
-tensorflow-probability
-tensorflow-serving
 texlive
 textdistance
 tflearn

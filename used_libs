@@ -1,4 +1,5 @@
 ld-linux-x86-64.so.2
 libc.so.6
 libm.so.6
+libmvec.so.1
 libopenblas.so.0
