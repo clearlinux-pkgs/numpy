@@ -2,12 +2,6 @@ avx2-distutils.patch
 avx2-fortran-distutils.patch
 timestamp.patch
 cve-2017-12852.nopatch
-#0001-AVX-implementation-with-intrinsic-for-small_correlat_v1.patch
 0001-AVX-Support-for-static-lib.patch
-#fix-overlap-with-avx.patch
-#use-avx2-instructions.patch
-#use-avx512f-for-numpy-SIMD-instructions.patch
-#fast_except.patch
-#CVE-2019-6446.patch
 0001-add-numpy-benchmarks-for-pgo.patch
 0001-make-distutils-support-PGO-options.patch
